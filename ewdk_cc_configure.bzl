@@ -860,7 +860,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp_module_compile,
                     ACTION_NAMES.cpp_module_codegen,
                 ],
-                flag_groups = [flag_group(flags = ["/DWINVER=0x0A00", "/D_WIN32_WINNT=0x0A00", "/DNTDDI_VERSION=0x0A000000"])],
+                flag_groups = [flag_group(flags = ["/DWINVER=0x0A00", "/D_WIN32_WINNT=0x0A00", "/DNTDDI_VERSION=0x0A00000C"])],
             ),
         ],
         provides = ["windows_target_version"],

@@ -181,7 +181,7 @@ When building for ARM64 (WDM drivers):
 * /D_WIN64
 * /D_ARM64_
 * /DARM64
-* /D_STD_CALL
+* /DSTD_CALL
 * /Zp8
 
 ## Default link flags

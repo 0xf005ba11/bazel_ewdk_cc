@@ -249,6 +249,9 @@ def _msbuild_remove_nonexisting(repository_ctx, value):
     return ";".join([x for x in dirs if len(x)])
 
 def _impl(ctx):
+    wdm_default_includes = [x.replace("\\", "/") for x in ctx.attr.msvc_env_wdm["INCLUDE"].split(";") if x]
+    app_default_includes = [x.replace("\\", "/") for x in ctx.attr.msvc_env_app["INCLUDE"].split(";") if x]
+
     artifact_name_patterns = [
         artifact_name_pattern(
             category_name = "object_file",
@@ -1105,8 +1108,6 @@ def _impl(ctx):
         flag_sets = [
             flag_set(
                 actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.cpp_compile,
@@ -1133,12 +1134,25 @@ def _impl(ctx):
                     flag_group(
                         flag_groups = [
                             flag_group(
-                                flags = ["/Fo%{output_file}", "/Zi"],
+                                flags = ["/Fo", "%{output_file}", "/c", "/Zi", "/Zd", "/W3"],
                                 expand_if_available = "output_file",
                                 expand_if_not_available = "output_assembly_file",
                             ),
                         ],
                         expand_if_not_available = "output_preprocess_file",
+                    ),
+                ],
+            ),
+            flag_set(
+                actions = [ACTION_NAMES.assemble],
+                flag_groups = [
+                    flag_group(
+                        flag_groups = [
+                            flag_group(
+                                flags = ["/Ta", "%{source_file}"],
+                                expand_if_available = "source_file",
+                            ),
+                        ],
                     ),
                 ],
             ),
@@ -1186,14 +1200,32 @@ def _impl(ctx):
         ],
     )
 
+    default_includes_cmdline_feature = feature(
+        name = "default_includes_cmdline",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                    ACTION_NAMES.lto_backend,
+                    ACTION_NAMES.clif_match,
+                ],
+                flag_groups = [flag_group(flags = ["/I" + x for x in wdm_default_includes])],
+                with_features = [with_feature_set(features = ["wdm"])],
+            ),
+        ],
+    )
+
     default_compile_flags_feature = feature(
         name = "default_compile_flags",
         enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
@@ -1221,8 +1253,6 @@ def _impl(ctx):
             ),
             flag_set(
                 actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
@@ -1537,7 +1567,11 @@ def _impl(ctx):
         name = "treat_warnings_as_errors",
         flag_sets = [
             flag_set(
-                actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile] + all_link_actions,
+                actions = [
+                    ACTION_NAMES.assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                ] + all_link_actions,
                 flag_groups = [flag_group(flags = ["/WX"])],
             ),
         ],
@@ -1695,6 +1729,7 @@ def _impl(ctx):
         retpoline_check_feature,
         compiler_input_flags_feature,
         compiler_output_flags_feature,
+        default_includes_cmdline_feature,
         default_compile_flags_feature,
         output_execpath_flags_feature,
         input_param_flags_feature,

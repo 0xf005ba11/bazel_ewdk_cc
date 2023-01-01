@@ -1737,6 +1737,12 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         host_cpu: Build execution cpu (e.g. x64_windows)
     """
 
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:ewdk_cc_configure.bzl")),
+        "ewdk_cc_configure.bzl",
+    )
+    tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
+
     # First, we need to get the envvars from executing the EWDK LaunchBuildEnv.cmd.
     # The user must have specified an EWDKDIR env var to the root of the EWDK location before executing bazel
     ewdkdir = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR")
@@ -1769,7 +1775,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         tpl_vars["%%{msvc_env_external_include_%s}" % platform] = buildenv["EXTERNAL_INCLUDE"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_libpath_%s}" % platform] = buildenv["LIBPATH"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_lib_%s}" % platform] = buildenv["LIB"].replace("\\", "\\\\")
-    repository_ctx.template("BUILD", "BUILD.ewdk.toolchains.tpl", tpl_vars)
+    repository_ctx.template("BUILD", tpl_path, tpl_vars)
 
 def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     """Produce BUILD file containing toolchain() definitions for EWDK C++

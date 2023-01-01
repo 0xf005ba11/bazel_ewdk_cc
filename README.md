@@ -139,6 +139,25 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * /Gm-
 * /GR- - ```wdm``` builds only
 
+When building in dbg or fastbuild mode, the following are added:
+* /Od
+* /Z7
+* /RTC1 - non-```wdm``` builds only
+* /DMSC_NOOPT - ```wdm``` builds only
+* /DDBG=1 - ```wdm``` builds only
+
+When building in opt mode, the following are added:
+* /DNDEBUG
+* /Gy
+* /GF
+* /Z7
+* /GL
+* /O2 - non-```wdm``` builds only
+* /Ox - ```wdm``` builds only
+* /Os - ```wdm``` builds only
+* /OPT:REF
+* /LTCG - (linker flag to compliment /GL)
+
 ## Default link flags
 * /DYNAMICBASE
 * /NXCOMPAT
@@ -146,6 +165,8 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * /NODEFAULTLIB - ```wdm``` builds only
 * /SECTION:INIT,d - ```wdm``` builds only
 * /MERGE:_TEXT=.text;_PAGE=PAGE - ```wdm``` builds only
+* /DEBUG:FULL
+* /INCREMENTAL:NO
 
 ## Default linked libs for WDM drivers
 * BufferOverflowFastFailK.lib

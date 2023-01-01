@@ -159,6 +159,31 @@ When building in opt mode, the following are added:
 * /OPT:REF
 * /LTCG - (linker flag to compliment /GL)
 
+When building for x86 32-bit (WDM drivers):
+* /D_X86_=1
+* /Di386=1
+* /DSTD_CALL
+* /Zp8
+
+When building for x64 (WDM drivers):
+* /D_WIN64
+* /D_AMD64_
+* /DAMD64
+* /Zp8
+
+When building for ARM (WDM drivers):
+* /D_ARM_
+* /DARM
+* /DSTD_CALL
+* /Zp8
+
+When building for ARM64 (WDM drivers):
+* /D_WIN64
+* /D_ARM64_
+* /DARM64
+* /D_STD_CALL
+* /Zp8
+
 ## Default link flags
 * /DYNAMICBASE
 * /NXCOMPAT

@@ -1075,6 +1075,27 @@ def _impl(ctx):
         provides = ["cet_spectre_load_cf_incompatible"],
     )
 
+    retpoline_check_feature = feature(
+        name = "retpoline_check",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                ],
+                flag_groups = [flag_group(flags = ["/d2guardretpoline"])],
+            ),
+            flag_set(
+                actions = all_link_actions,
+                flag_groups = [flag_group(flags = ["/guard:retpoline"])],
+            ),
+        ],
+    )
+
     compiler_input_flags_feature = feature(
         name = "compiler_input_flags",
         flag_sets = [
@@ -1374,6 +1395,7 @@ def _impl(ctx):
                     flag_group(
                         flags = [
                             ctx.attr.link_machine_flag,
+                            "/INTEGRITYCHECK",
                             "/DYNAMICBASE",
                             "/NXCOMPAT",
                             "/DRIVER",
@@ -1666,6 +1688,7 @@ def _impl(ctx):
         guard_ehcont_feature,
         spectre_feature,
         spectre_load_cf_feature,
+        retpoline_check_feature,
         compiler_input_flags_feature,
         compiler_output_flags_feature,
         default_compile_flags_feature,

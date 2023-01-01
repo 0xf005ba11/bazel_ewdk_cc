@@ -157,12 +157,26 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
     vsversion = env_map["VISUALSTUDIOVERSION"]
     if vsversion == "17.0":
         env_map["VCINSTALLDIR_170"] = env_map["VCINSTALLDIR"]
+    elif vsversion == "16.0":
+        env_map["VCINSTALLDIR_160"] = env_map["VCINSTALLDIR"]
+    elif vsversion == "15.0":
+        env_map["VCINSTALLDIR_150"] = env_map["VCINSTALLDIR"]
+    env_map["_MSBUILD_PATH"] = _get_msbuild_path(repository_ctx, env_map)
     return env_map
+
+def _get_msbuild_path(repository_ctx, env):
+    """Retrieve the path to msbuild.exe"""
+    repository_ctx.file("ewdk_get_msbuild.bat", "@echo off\r\nwhere msbuild.exe\r\n", True)
+    output = execute(repository_ctx, ["./ewdk_get_msbuild.bat"], environment = env)
+    for line in output.split("\n"):
+        if len(line):
+            return line.strip()
+    fail("Failed to locate msbuild.exe for this EWDK")
 
 def _get_msbuild_envs(repository_ctx, env):
     """Retrieve env vars set by msbuild used as defaults for the various project types supported here"""
     fast_safe = ["ni_release_svc_prod1.22621.382"]
-    ewdk_version = env["BUILDLAB"]
+    ewdk_version = env.get("BUILDLAB")
 
     build_envs = {}
     platforms = ["x86", "x64", "arm", "arm64"]
@@ -195,7 +209,7 @@ def _msbuild_extract_vars(repository_ctx, env, project_type, platform):
     projfile = project_type + ".vcxproj"
     repository_ctx.file(projfile, _project_types[project_type])
     args = [
-        msbuild,
+        env["_MSBUILD_PATH"],
         projfile,
         "/verbosity:detailed",
         "/property:Configuration=Release",
@@ -1770,9 +1784,10 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         tpl_vars["%%{msvc_link_path_%s}" % platform] = "{}/bin/HostX64/{}/link.exe".format(binroot, platform)
 
     for platform, buildenv in build_envs.items():
+        include = buildenv["INCLUDE"]
         tpl_vars["%%{msvc_env_path_%s}" % platform] = buildenv["PATH"].replace("\\", "\\\\")
-        tpl_vars["%%{msvc_env_include_%s}" % platform] = buildenv["INCLUDE"].replace("\\", "\\\\")
-        tpl_vars["%%{msvc_env_external_include_%s}" % platform] = buildenv["EXTERNAL_INCLUDE"].replace("\\", "\\\\")
+        tpl_vars["%%{msvc_env_include_%s}" % platform] = include.replace("\\", "\\\\")
+        tpl_vars["%%{msvc_env_external_include_%s}" % platform] = buildenv.get("EXTERNAL_INCLUDE", include).replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_libpath_%s}" % platform] = buildenv["LIBPATH"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_lib_%s}" % platform] = buildenv["LIB"].replace("\\", "\\\\")
     repository_ctx.template("BUILD", tpl_path, tpl_vars)

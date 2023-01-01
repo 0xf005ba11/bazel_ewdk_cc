@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Copyright (c) 2022 Ira Strawser
+# SPDX-License-Identifier: MIT
+
+exports_files(
+    glob(
+        ["*"],
+        exclude = ["BUILD.bazel"],
+    ),
+)

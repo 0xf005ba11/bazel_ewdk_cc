@@ -999,6 +999,17 @@ def _impl(ctx):
         name = "cfg_security_checks",
         flag_sets = [
             flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                ],
+                flag_groups = [flag_group(flags = ["/guard:cf"])],
+            ),
+            flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/guard:cf"])],
             ),

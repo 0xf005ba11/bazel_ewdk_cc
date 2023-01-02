@@ -128,6 +128,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * retpoline_check - /d2guardretpoline and /guard:retpoline
 * spectre - /Qspectre
 * spectre_load_cf - /Qspectre-load-cf
+* default_includes_cmdline - Adds the default include paths to the command line (/I). This can be useful for tooling like producing intellisense configurations.
 
 ## Default compile flags
 * /DCOMPILER_MSVC

@@ -204,7 +204,6 @@ def _get_msbuild_envs(repository_ctx, env):
 
 def _msbuild_extract_vars(repository_ctx, env, project_type, platform):
     """Execute msbuild.exe with detailed verbosity enabled to extract the SetEnv tasks"""
-    msbuild = env["VSINSTALLDIR"].rstrip("\\").replace("\\", "/") + "/MSBuild/Current/Bin/amd64/MSBuild.exe"
     vars = ("PATH=", "INCLUDE=", "EXTERNAL_INCLUDE=", "LIBPATH=", "LIB=")
     projfile = project_type + ".vcxproj"
     repository_ctx.file(projfile, _project_types[project_type])

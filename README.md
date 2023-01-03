@@ -125,7 +125,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * cfg_security_checks - /guard:cf
 * cet_compatible - /CETCOMPAT (Note: For ARM this will automatically revert to /CETCOMPAT:NO)
 * guard_ehcont - /guard:ehcont
-* retpoline_check - /d2guardretpoline and /guard:retpoline
+* retpoline_check - /d2guardretpoline and /guard:retpoline (x64-only)
 * spectre - /Qspectre
 * spectre_load_cf - /Qspectre-load-cf
 * default_includes_cmdline - Adds the default include paths to the command line (/I). This can be useful for tooling like producing intellisense configurations.
@@ -195,6 +195,11 @@ When building for ARM64 (WDM drivers):
 * /MERGE:_TEXT=.text;_PAGE=PAGE - ```wdm``` builds only
 * /DEBUG:FULL
 * /INCREMENTAL:NO
+
+## Default masm flags
+* /Zi
+* /Zd
+* /W3
 
 ## Default linked libs for WDM drivers
 * BufferOverflowFastFailK.lib

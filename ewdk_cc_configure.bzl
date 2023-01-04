@@ -247,9 +247,32 @@ def _msbuild_remove_nonexisting(repository_ctx, value):
                 dirs[i] = ""
     return ";".join([x for x in dirs if len(x)])
 
+def _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, sdk_version, binroot, build_envs):
+    host = "x64"
+    app_includes = build_envs["app_" + host]["INCLUDE"]
+    wdm_includes = build_envs["wdm_" + host]["INCLUDE"]
+
+    includes = []
+    prune = {}
+    for x in app_includes.split(";") + wdm_includes.split(";"):
+        if x and not prune.get(x) and not x.lower().endswith("\\km\\crt"):
+            prune[x] = 1
+            includes.append(x)
+
+    indent = "    " * 4
+    includes = (",\r\n%s" % indent).join(["\"%s\"" % x for x in includes])
+
+    tpl_vars = {
+        "%{cl_path}": "{}/bin/HostX64/{}/cl.exe".format(binroot, host),
+        "%{c_standard}": "c17",
+        "%{cpp_standard}": "c++17",
+        "%{sdk_version}": sdk_version,
+        "%{system_includes}": includes.replace("\\", "/"),
+    }
+    repository_ctx.template("c_cpp_properties.json", vscode_cfg_path, tpl_vars)
+
 def _impl(ctx):
     wdm_default_includes = [x.replace("\\", "/") for x in ctx.attr.msvc_env_wdm["INCLUDE"].split(";") if x]
-    app_default_includes = [x.replace("\\", "/") for x in ctx.attr.msvc_env_app["INCLUDE"].split(";") if x]
 
     artifact_name_patterns = [
         artifact_name_pattern(
@@ -1817,6 +1840,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         "ewdk_cc_configure.bzl",
     )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
+    vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
 
     # First, we need to get the envvars from executing the EWDK LaunchBuildEnv.cmd.
     # The user must have specified an EWDKDIR env var to the root of the EWDK location before executing bazel
@@ -1852,6 +1876,8 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         tpl_vars["%%{msvc_env_libpath_%s}" % platform] = buildenv["LIBPATH"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_lib_%s}" % platform] = buildenv["LIB"].replace("\\", "\\\\")
     repository_ctx.template("BUILD", tpl_path, tpl_vars)
+
+    _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)
 
 def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     """Produce BUILD file containing toolchain() definitions for EWDK C++

@@ -6,6 +6,7 @@ Build windows applications and drivers with the EWDK.
 Supports:
 * Building WDM drivers (KMDF not yet implemented)
 * Building applications, DLLs and static libraries.
+* Windows resource scripts.
 * Cross-compiling to x86, x64, ARM and ARM64
 * Supports building on x64 hosts only.
 * Intellisense configurations for use with the EWDK.
@@ -95,6 +96,20 @@ cc_binary(
         "cdecl",
     ],
 )
+```
+
+## Building a resource script
+
+```starlark
+load("@bazel_ewdk_cc//:resource_toolchain.bzl", "resource_script")
+
+resource_script(
+    name = "your_rc",
+    rcfile = "your.rc",
+    rcopts = [], # put additional command line options here if needed
+)
+
+# "your_rc" can now be referenced in deps of other binaries
 ```
 
 ## Windows vscode intellisense settings

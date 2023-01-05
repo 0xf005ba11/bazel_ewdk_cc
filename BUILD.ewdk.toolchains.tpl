@@ -5,6 +5,7 @@
 
 load("@rules_cc//cc:defs.bzl", "cc_toolchain")
 load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config")
+load(":resource_toolchain.bzl", "resource_script_toolchain_config")
 
 filegroup(
     name = "empty",
@@ -138,8 +139,6 @@ _TOOL_PATHS_ARM64 = {
 # x64 toolchain
 cc_toolchain(
     name = "ewdk-cc-compiler-x64_windows",
-    toolchain_identifier = "ewdk_msvc_x64",
-    toolchain_config = ":ewdk_msvc_x64",
     all_files = ":empty",
     ar_files = ":empty",
     as_files = ":empty",
@@ -149,22 +148,29 @@ cc_toolchain(
     objcopy_files = ":empty",
     strip_files = ":empty",
     supports_param_files = 1,
+    toolchain_config = ":ewdk_msvc_x64",
+    toolchain_identifier = "ewdk_msvc_x64",
 )
 
 ewdk_cc_toolchain_config(
     name = "ewdk_msvc_x64",
+    arch_c_opts_wdm = [
+        "/D_WIN64",
+        "/D_AMD64_",
+        "/DAMD64",
+        "/Zp8",
+    ],
+    cetcompat_option = "/CETCOMPAT",
     cpu = "x64_windows",
-    link_machine_flag = "/MACHINE:X64",
     entry_symbol_suffix = "",
     has_gz_option = "/Gz",
-    cetcompat_option = "/CETCOMPAT",
     host_system_name = "local",
-    target_system_name = "local",
-    toolchain_identifier = "ewdk_msvc_x64",
-    msvc_env_wdm = _MSVC_ENV_WDM_X64,
+    link_machine_flag = "/MACHINE:X64",
     msvc_env_app = _MSVC_ENV_APP_X64,
-    arch_c_opts_wdm = ["/D_WIN64", "/D_AMD64_", "/DAMD64", "/Zp8"],
+    msvc_env_wdm = _MSVC_ENV_WDM_X64,
+    target_system_name = "local",
     tool_paths = _TOOL_PATHS_X64,
+    toolchain_identifier = "ewdk_msvc_x64",
 )
 
 toolchain(
@@ -184,8 +190,6 @@ toolchain(
 # x86 toolchain
 cc_toolchain(
     name = "ewdk-cc-compiler-x86_windows",
-    toolchain_identifier = "ewdk_msvc_x86",
-    toolchain_config = ":ewdk_msvc_x86",
     all_files = ":empty",
     ar_files = ":empty",
     as_files = ":empty",
@@ -195,22 +199,29 @@ cc_toolchain(
     objcopy_files = ":empty",
     strip_files = ":empty",
     supports_param_files = 1,
+    toolchain_config = ":ewdk_msvc_x86",
+    toolchain_identifier = "ewdk_msvc_x86",
 )
 
 ewdk_cc_toolchain_config(
     name = "ewdk_msvc_x86",
+    arch_c_opts_wdm = [
+        "/D_X86_=1",
+        "/Di386=1",
+        "/DSTD_CALL",
+        "/Zp8",
+    ],
+    cetcompat_option = "/CETCOMPAT",
     cpu = "x86_windows",
-    link_machine_flag = "/MACHINE:X86",
     entry_symbol_suffix = "@8",
     has_gz_option = "/Gz",
-    cetcompat_option = "/CETCOMPAT",
     host_system_name = "local",
-    target_system_name = "local",
-    toolchain_identifier = "ewdk_msvc_x86",
-    msvc_env_wdm = _MSVC_ENV_WDM_X86,
+    link_machine_flag = "/MACHINE:X86",
     msvc_env_app = _MSVC_ENV_APP_X86,
-    arch_c_opts_wdm = ["/D_X86_=1", "/Di386=1", "/DSTD_CALL", "/Zp8"],
+    msvc_env_wdm = _MSVC_ENV_WDM_X86,
+    target_system_name = "local",
     tool_paths = _TOOL_PATHS_X86,
+    toolchain_identifier = "ewdk_msvc_x86",
 )
 
 toolchain(
@@ -230,8 +241,6 @@ toolchain(
 # arm64 toolchain
 cc_toolchain(
     name = "ewdk-cc-compiler-arm64_windows",
-    toolchain_identifier = "ewdk_msvc_arm64",
-    toolchain_config = ":ewdk_msvc_arm64",
     all_files = ":empty",
     ar_files = ":empty",
     as_files = ":empty",
@@ -241,22 +250,30 @@ cc_toolchain(
     objcopy_files = ":empty",
     strip_files = ":empty",
     supports_param_files = 1,
+    toolchain_config = ":ewdk_msvc_arm64",
+    toolchain_identifier = "ewdk_msvc_arm64",
 )
 
 ewdk_cc_toolchain_config(
     name = "ewdk_msvc_arm64",
+    arch_c_opts_wdm = [
+        "/D_WIN64",
+        "/D_ARM64_",
+        "/DARM64",
+        "/DSTD_CALL",
+        "/Zp8",
+    ],
+    cetcompat_option = "/CETCOMPAT:NO",
     cpu = "arm64_windows",
-    link_machine_flag = "/MACHINE:ARM64",
     entry_symbol_suffix = "",
     has_gz_option = "/Gd",
-    cetcompat_option = "/CETCOMPAT:NO",
     host_system_name = "local",
-    target_system_name = "local",
-    toolchain_identifier = "ewdk_msvc_arm64",
-    msvc_env_wdm = _MSVC_ENV_WDM_ARM64,
+    link_machine_flag = "/MACHINE:ARM64",
     msvc_env_app = _MSVC_ENV_APP_ARM64,
-    arch_c_opts_wdm = ["/D_WIN64", "/D_ARM64_", "/DARM64", "/DSTD_CALL", "/Zp8"],
+    msvc_env_wdm = _MSVC_ENV_WDM_ARM64,
+    target_system_name = "local",
     tool_paths = _TOOL_PATHS_ARM64,
+    toolchain_identifier = "ewdk_msvc_arm64",
 )
 
 toolchain(
@@ -276,8 +293,6 @@ toolchain(
 # arm toolchain
 cc_toolchain(
     name = "ewdk-cc-compiler-arm_windows",
-    toolchain_identifier = "ewdk_msvc_arm",
-    toolchain_config = ":ewdk_msvc_arm",
     all_files = ":empty",
     ar_files = ":empty",
     as_files = ":empty",
@@ -287,22 +302,29 @@ cc_toolchain(
     objcopy_files = ":empty",
     strip_files = ":empty",
     supports_param_files = 1,
+    toolchain_config = ":ewdk_msvc_arm",
+    toolchain_identifier = "ewdk_msvc_arm",
 )
 
 ewdk_cc_toolchain_config(
     name = "ewdk_msvc_arm",
+    arch_c_opts_wdm = [
+        "/D_ARM_",
+        "/DARM",
+        "/DSTD_CALL",
+        "/Zp8",
+    ],
+    cetcompat_option = "/CETCOMPAT:NO",
     cpu = "arm_windows",
-    link_machine_flag = "/MACHINE:ARM",
     entry_symbol_suffix = "",
     has_gz_option = "/Gd",
-    cetcompat_option = "/CETCOMPAT:NO",
     host_system_name = "local",
-    target_system_name = "local",
-    toolchain_identifier = "ewdk_msvc_arm",
-    msvc_env_wdm = _MSVC_ENV_WDM_ARM,
+    link_machine_flag = "/MACHINE:ARM",
     msvc_env_app = _MSVC_ENV_APP_ARM,
-    arch_c_opts_wdm = ["/D_ARM_", "/DARM", "/DSTD_CALL", "/Zp8"],
+    msvc_env_wdm = _MSVC_ENV_WDM_ARM,
+    target_system_name = "local",
     tool_paths = _TOOL_PATHS_ARM,
+    toolchain_identifier = "ewdk_msvc_arm",
 )
 
 toolchain(
@@ -317,4 +339,26 @@ toolchain(
     ],
     toolchain = ":ewdk-cc-compiler-arm_windows",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+# resource script toolchain
+toolchain_type(
+    name = "resource_script_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+resource_script_toolchain_config(
+    name = "ewdk_resource_script_toolchain",
+    rcpath = "rc_wrapper.bat",
+)
+
+toolchain(
+    name = "resource-script-windows",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = ["@platforms//os:windows"],
+    toolchain = ":ewdk_resource_script_toolchain",
+    toolchain_type = ":resource_script_toolchain_type",
 )

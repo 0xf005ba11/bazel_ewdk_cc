@@ -161,17 +161,18 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
         env_map["VCINSTALLDIR_160"] = env_map["VCINSTALLDIR"]
     elif vsversion == "15.0":
         env_map["VCINSTALLDIR_150"] = env_map["VCINSTALLDIR"]
-    env_map["_MSBUILD_PATH"] = _get_msbuild_path(repository_ctx, env_map)
+    env_map["_MSBUILD_PATH"] = _get_exe_path(repository_ctx, "msbuild.exe", env_map)
+    env_map["_RC_PATH"] = _get_exe_path(repository_ctx, "rc.exe", env_map)
     return env_map
 
-def _get_msbuild_path(repository_ctx, env):
-    """Retrieve the path to msbuild.exe"""
-    repository_ctx.file("ewdk_get_msbuild.bat", "@echo off\r\nwhere msbuild.exe\r\n", True)
-    output = execute(repository_ctx, ["./ewdk_get_msbuild.bat"], environment = env)
+def _get_exe_path(repository_ctx, filename, env):
+    """Retrieve the path to the given exe"""
+    repository_ctx.file("ewdk_get_exe.bat", "@echo off\r\nwhere %1\r\n", True)
+    output = execute(repository_ctx, ["./ewdk_get_exe.bat", filename], environment = env)
     for line in output.split("\n"):
         if len(line):
             return line.strip()
-    fail("Failed to locate msbuild.exe for this EWDK")
+    fail("Failed to locate %s for this EWDK" % filename)
 
 def _get_msbuild_envs(repository_ctx, env):
     """Retrieve env vars set by msbuild used as defaults for the various project types supported here"""
@@ -1839,6 +1840,10 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         repository_ctx.path(Label("//:ewdk_cc_configure.bzl")),
         "ewdk_cc_configure.bzl",
     )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:resource_toolchain.bzl")),
+        "resource_toolchain.bzl",
+    )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
 
@@ -1860,6 +1865,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     plat32 = ["x86", "arm"]
     tpl_vars = {
         "%{msvc_env_tmp}": env["TMP"].replace("\\", "\\\\"),
+        "%{msvc_rc_path}": env["_RC_PATH"].replace("\\", "/"),
     }
     for platform in platforms:
         ml_name = "ml.exe" if platform in plat32 else "ml64.exe"
@@ -1876,6 +1882,8 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         tpl_vars["%%{msvc_env_libpath_%s}" % platform] = buildenv["LIBPATH"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_lib_%s}" % platform] = buildenv["LIB"].replace("\\", "\\\\")
     repository_ctx.template("BUILD", tpl_path, tpl_vars)
+    
+    repository_ctx.file("rc_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_RC_PATH"])
 
     _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)
 

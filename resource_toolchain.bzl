@@ -27,13 +27,9 @@ resource_script_toolchain_config = rule(
     implementation = _rc_toolchain_impl,
 )
 
-def _change_extension(filename, ext):
-    offset = filename.rfind(".")
-    return filename + ext if offset > 0 else filename[:offset] + ext
-
 def _compile_rc(ctx, rcpath, script, rcopts):
-    output = ctx.actions.declare_file(_change_extension(script.rcfile.basename, ".res"))
-    
+    output = ctx.actions.declare_file(script.rcfile.basename + ".res")
+
     # the script must be last on the command line
     ctx.actions.run(
         inputs = [script.rcfile],

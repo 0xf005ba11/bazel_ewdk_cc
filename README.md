@@ -29,9 +29,9 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
     name = "bazel_ewdk_cc",
-    commit = "8a4977d1317377f2dd19773274abf8519e6b5ffb",
+    commit = "38824fdee6df5055d3c89fe805c801a6d6f73094",
     remote = "https://github.com/0xf005ba11/bazel_ewdk_cc",
-    shallow_since = "1672954296 -0700",
+    shallow_since = "1673123164 -0700",
 )
 
 load("@bazel_ewdk_cc//:ewdk_cc_configure.bzl", "register_ewdk_cc_toolchains")

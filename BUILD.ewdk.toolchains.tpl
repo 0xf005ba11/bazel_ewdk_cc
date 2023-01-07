@@ -341,24 +341,113 @@ toolchain(
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 
-# resource script toolchain
+# resource script x86 toolchain
 toolchain_type(
     name = "resource_script_toolchain_type",
     visibility = ["//visibility:public"],
 )
 
 resource_script_toolchain_config(
-    name = "ewdk_resource_script_toolchain",
+    name = "ewdk_resource_script_toolchain_x86",
+    defines = [
+        "/Di386=1",
+        "/D_X86_=1",
+        "/D_M_IX86",
+    ],
+    env = _MSVC_ENV_APP_X86,
     rcpath = "rc_wrapper.bat",
 )
 
 toolchain(
-    name = "resource-script-windows",
+    name = "resource-script-windows-x86",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
         "@platforms//os:windows",
     ],
-    target_compatible_with = ["@platforms//os:windows"],
-    toolchain = ":ewdk_resource_script_toolchain",
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_32",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_x86",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+# resource script x64 toolchain
+resource_script_toolchain_config(
+    name = "ewdk_resource_script_toolchain_x64",
+    defines = [
+        "/D_WIN64",
+        "/D_AMD64_",
+        "/DAMD64",
+        "/D_M_AMD64",
+    ],
+    env = _MSVC_ENV_APP_X64,
+    rcpath = "rc_wrapper.bat",
+)
+
+toolchain(
+    name = "resource-script-windows-x64",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_x64",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+# resource script arm toolchain
+resource_script_toolchain_config(
+    name = "ewdk_resource_script_toolchain_arm",
+    defines = [
+        "/D_ARM_",
+        "/DARM",
+        "/D_M_ARM",
+    ],
+    env = _MSVC_ENV_APP_ARM,
+    rcpath = "rc_wrapper.bat",
+)
+
+toolchain(
+    name = "resource-script-windows-arm",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_arm",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+# resource script arm64 toolchain
+resource_script_toolchain_config(
+    name = "ewdk_resource_script_toolchain_arm64",
+    defines = [
+        "/D_WIN64",
+        "/D_ARM64_",
+        "/DARM64",
+        "/D_M_ARM64",
+    ],
+    env = _MSVC_ENV_APP_ARM64,
+    rcpath = "rc_wrapper.bat",
+)
+
+toolchain(
+    name = "resource-script-windows-arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_arm64",
     toolchain_type = ":resource_script_toolchain_type",
 )

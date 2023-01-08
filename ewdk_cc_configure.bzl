@@ -640,6 +640,16 @@ def _impl(ctx):
         ],
     )
 
+    msvc_profile_feature = feature(
+        name = "msvc_profile",
+        flag_sets = [
+            flag_set(
+                actions = all_link_actions,
+                flag_groups = [flag_group(flags = ["/PROFILE"])],
+            ),
+        ],
+    )
+
     static_link_msvcrt_feature = feature(
         name = "static_link_msvcrt",
         flag_sets = [
@@ -1723,6 +1733,7 @@ def _impl(ctx):
         msvc_env_feature,
         preprocessor_defines_feature,
         msvc_no_minmax_feature,
+        msvc_profile_feature,
         static_link_msvcrt_feature,
         static_link_msvcrt_no_debug_feature,
         dynamic_link_msvcrt_feature,
@@ -1882,7 +1893,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         tpl_vars["%%{msvc_env_libpath_%s}" % platform] = buildenv["LIBPATH"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_lib_%s}" % platform] = buildenv["LIB"].replace("\\", "\\\\")
     repository_ctx.template("BUILD", tpl_path, tpl_vars)
-    
+
     repository_ctx.file("rc_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_RC_PATH"])
 
     _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)

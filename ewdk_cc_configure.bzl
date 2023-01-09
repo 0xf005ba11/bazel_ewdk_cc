@@ -1136,6 +1136,40 @@ def _impl(ctx):
         ],
     )
 
+    charset_unicode_feature = feature(
+        name = "charset_unicode",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                ],
+                flag_groups = [flag_group(flags = ["/D_UNICODE", "/DUNICODE"])],
+            ),
+        ],
+    )
+
+    charset_multibyte_feature = feature(
+        name = "charset_multibyte",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                ],
+                flag_groups = [flag_group(flags = ["/D_MBCS"])],
+            ),
+        ],
+    )
+
     compiler_input_flags_feature = feature(
         name = "compiler_input_flags",
         flag_sets = [
@@ -1273,8 +1307,6 @@ def _impl(ctx):
                         flags = [
                             "/DCOMPILER_MSVC",
                             "/EHsc",
-                            "/D_UNICODE",
-                            "/DUNICODE",
                             "/FC",
                             "/Zc:wchar_t",
                             "/utf-8",
@@ -1761,6 +1793,8 @@ def _impl(ctx):
         spectre_feature,
         spectre_load_cf_feature,
         retpoline_check_feature,
+        charset_unicode_feature,
+        charset_multibyte_feature,
         compiler_input_flags_feature,
         compiler_output_flags_feature,
         default_includes_cmdline_feature,

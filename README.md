@@ -133,6 +133,8 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * subsystem_windows - /SUBSYSTEM:WINDOWS
 * stdcall - /Gz  (Note: For ARM this will automatically revert to /Gd)
 * cdecl - /Gd
+* charset_unicode - /D_UNICODE /DUNICODE
+* charset_multibyte - /D_MBCS
 * msvc_level3_warnings - /W3
 * msvc_level4_warnings - /W4
 * treat_warnings_as_errors - /WX
@@ -160,8 +162,6 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 ## Default compile flags
 * /DCOMPILER_MSVC
 * /EHsc - non-```wdm``` builds only
-* /D_UNICODE - non-```wdm``` builds only
-* /DUNICODE - non-```wdm``` builds only
 * /FC
 * /Zc:wchar_t
 * /utf-8

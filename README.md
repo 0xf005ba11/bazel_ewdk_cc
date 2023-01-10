@@ -163,6 +163,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * /bigobj
 * /Zm500
 * /EHsc - non-```wdm``` builds only
+* /DNOMINMAX - use the msvc_enable_minmax feature to re-enable these macros
 * /FC
 * /Zc:wchar_t
 * /utf-8

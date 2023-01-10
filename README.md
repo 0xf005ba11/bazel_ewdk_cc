@@ -66,7 +66,6 @@ cc_binary(
         "msvc_level4_warnings",
         "treat_warnings_as_errors",
         "cpp20",
-        "msvc_no_minmax",
         "buffer_security_checks",
         "sdl_security_checks",
         "cfg_security_checks",
@@ -147,7 +146,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * cpp14 - /std:c++14
 * cpp17 - /std:c++17
 * cpp20 - /std:c++20
-* msvc_no_minmax - /DNOMINMAX
+* msvc_enable_minmax - Enable the windows SDK min and max macros (they are disabled by default with /DNOMINMAX)
 * win32_lean_and_mean - /DWIN32_LEAN_AND_MEAN=1
 * buffer_security_checks - /GS
 * sdl_security_checks - /sdl

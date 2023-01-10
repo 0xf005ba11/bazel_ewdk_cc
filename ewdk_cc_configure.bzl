@@ -623,8 +623,11 @@ def _impl(ctx):
         ],
     )
 
+    msvc_enable_minmax_feature = feature(name = "msvc_enable_minmax")
+
     msvc_no_minmax_feature = feature(
         name = "msvc_no_minmax",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
@@ -636,6 +639,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp_module_codegen,
                 ],
                 flag_groups = [flag_group(flags = ["/DNOMINMAX"])],
+                with_features = [with_feature_set(not_features = ["msvc_enable_minmax"])],
             ),
         ],
     )
@@ -1777,6 +1781,7 @@ def _impl(ctx):
         wdm_entry_feature,
         msvc_env_feature,
         preprocessor_defines_feature,
+        msvc_enable_minmax_feature,
         msvc_no_minmax_feature,
         msvc_profile_feature,
         static_link_msvcrt_feature,

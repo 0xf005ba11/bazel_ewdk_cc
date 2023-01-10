@@ -1678,7 +1678,7 @@ def _impl(ctx):
         ],
     )
 
-    dbg_flag_sets = [
+    dbg_compile_flags = [
         flag_set(
             actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
             flag_groups = [flag_group(flags = ["/Od", "/Z7"])],
@@ -1693,6 +1693,16 @@ def _impl(ctx):
             flag_groups = [flag_group(flags = ["/DMSC_NOOPT", "/DDBG=1"])],
             with_features = [with_feature_set(features = ["wdm"])],
         ),
+    ]
+
+    dbg_link_flags_fast = [
+        flag_set(
+            actions = all_link_actions,
+            flag_groups = [flag_group(flags = ["/DEBUG:FASTLINK", "/INCREMENTAL:NO"])],
+        ),
+    ]
+
+    dbg_link_flags_full = [
         flag_set(
             actions = all_link_actions,
             flag_groups = [flag_group(flags = ["/DEBUG:FULL", "/INCREMENTAL:NO"])],
@@ -1701,14 +1711,14 @@ def _impl(ctx):
 
     dbg_feature = feature(
         name = "dbg",
-        flag_sets = dbg_flag_sets,
+        flag_sets = dbg_compile_flags + dbg_link_flags_full,
         implies = ["generate_pdb_file"],
         provides = ["build_type"],
     )
 
     fastbuild_feature = feature(
         name = "fastbuild",
-        flag_sets = dbg_flag_sets,
+        flag_sets = dbg_compile_flags + dbg_link_flags_fast,
         implies = ["generate_pdb_file"],
         provides = ["build_type"],
     )
@@ -1720,7 +1730,7 @@ def _impl(ctx):
         flag_sets = [
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-                flag_groups = [flag_group(flags = ["/DNDEBUG", "/Gy", "/GF", "/Z7"])],
+                flag_groups = [flag_group(flags = ["/DNDEBUG", "/Gy", "/GF", "/Zi"])],
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],

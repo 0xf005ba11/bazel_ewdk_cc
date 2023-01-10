@@ -161,6 +161,8 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 
 ## Default compile flags
 * /DCOMPILER_MSVC
+* /bigobj
+* /Zm500
 * /EHsc - non-```wdm``` builds only
 * /FC
 * /Zc:wchar_t
@@ -179,7 +181,7 @@ When building in opt mode, the following are added:
 * /DNDEBUG
 * /Gy
 * /GF
-* /Z7
+* /Zi
 * /GL
 * /O2 - non-```wdm``` builds only
 * /Ox - ```wdm``` builds only
@@ -220,7 +222,8 @@ When building for ARM64 (WDM drivers):
 * /NODEFAULTLIB - ```wdm``` builds only
 * /SECTION:INIT,d - ```wdm``` builds only
 * /MERGE:_TEXT=.text;_PAGE=PAGE - ```wdm``` builds only
-* /DEBUG:FULL
+* /DEBUG:FULL (opt and dbg builds)
+* /DEBUG:FASTLINK (fastbuild)
 * /INCREMENTAL:NO
 
 ## Default masm flags

@@ -1306,6 +1306,8 @@ def _impl(ctx):
                     flag_group(
                         flags = [
                             "/DCOMPILER_MSVC",
+                            "/bigobj",
+                            "/Zm500",
                             "/EHsc",
                             "/FC",
                             "/Zc:wchar_t",

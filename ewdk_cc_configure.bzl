@@ -1700,7 +1700,8 @@ def _impl(ctx):
     dbg_link_flags_fast = [
         flag_set(
             actions = all_link_actions,
-            flag_groups = [flag_group(flags = ["/DEBUG:FASTLINK", "/INCREMENTAL:NO"])],
+            # this should be /DEBUG:FASTLINK but the EWDK link.exe was crashing very often in large builds
+            flag_groups = [flag_group(flags = ["/DEBUG:FULL", "/INCREMENTAL:NO"])],
         ),
     ]
 

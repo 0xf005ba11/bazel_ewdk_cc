@@ -222,8 +222,7 @@ When building for ARM64 (WDM drivers):
 * /NODEFAULTLIB - ```wdm``` builds only
 * /SECTION:INIT,d - ```wdm``` builds only
 * /MERGE:_TEXT=.text;_PAGE=PAGE - ```wdm``` builds only
-* /DEBUG:FULL (opt and dbg builds)
-* /DEBUG:FASTLINK (fastbuild)
+* /DEBUG:FULL
 * /INCREMENTAL:NO
 
 ## Default masm flags

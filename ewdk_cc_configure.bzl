@@ -752,13 +752,14 @@ def _impl(ctx):
 
     subsystem_console_feature = feature(
         name = "subsystem_console",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/SUBSYSTEM:CONSOLE"])],
+                with_features = [with_feature_set(not_features = ["subsystem_windows", "subsystem_native"])],
             ),
         ],
-        provides = ["subsystem"],
     )
 
     subsystem_windows_feature = feature(

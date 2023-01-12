@@ -1738,7 +1738,7 @@ def _impl(ctx):
         flag_sets = [
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-                flag_groups = [flag_group(flags = ["/DNDEBUG", "/Gy", "/GF", "/Zi"])],
+                flag_groups = [flag_group(flags = ["/DNDEBUG", "/Gy", "/GF", "/Z7"])],
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],

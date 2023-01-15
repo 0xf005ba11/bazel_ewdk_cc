@@ -1,0 +1,2 @@
+BUILD.ewdk.toolchains.tpl linguist-language=starlark
+c_cpp_properties.tpl linguist-language=json

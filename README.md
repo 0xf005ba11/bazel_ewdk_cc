@@ -25,13 +25,13 @@ bazel build ...
 
 Include the following in your WORKSPACE:
 ```starlark
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-git_repository(
+http_archive(
     name = "bazel_ewdk_cc",
-    commit = "6218a35c56b1dc73a640684394e2b653542dea69",
-    remote = "https://github.com/0xf005ba11/bazel_ewdk_cc",
-    shallow_since = "1673318430 -0700",
+    sha256 = "fdc6ca9a8610f28744cf37af132a03422599f580757b6e54478e007e7505bac9",
+    strip_prefix = "bazel_ewdk_cc-1.0.3/",
+    url = "https://github.com/0xf005ba11/bazel_ewdk_cc/archive/refs/tags/v1.0.3.zip",
 )
 
 load("@bazel_ewdk_cc//:ewdk_cc_configure.bzl", "register_ewdk_cc_toolchains")

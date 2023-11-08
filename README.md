@@ -166,7 +166,6 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * /DNOMINMAX - use the msvc_enable_minmax feature to re-enable these macros
 * /FC
 * /Zc:wchar_t
-* /utf-8
 * /Gm-
 * /GR- - ```wdm``` builds only
 * /DWINVER=0x0601 - Use `target_win8`, `target_win10`, or `target_win11` to change

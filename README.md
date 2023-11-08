@@ -169,6 +169,9 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * /utf-8
 * /Gm-
 * /GR- - ```wdm``` builds only
+* /DWINVER=0x0601 - Use `target_win8`, `target_win10`, or `target_win11` to change
+* /D_WIN32_WINNT=0x0601 - Use `target_win8`, `target_win10`, or `target_win11` to change
+* /DNTDDI_VERSION=0x06010000 - Use `target_win8`, `target_win10`, or `target_win11` to change
 
 When building in dbg or fastbuild mode, the following are added:
 * /Od

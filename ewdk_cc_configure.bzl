@@ -835,6 +835,25 @@ def _impl(ctx):
         ],
     )
 
+    target_win7_default_feature = feature(
+        name = "target_win7_default",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                ],
+                flag_groups = [flag_group(flags = ["/DWINVER=0x0601", "/D_WIN32_WINNT=0x0601", "/DNTDDI_VERSION=0x06010000"])],
+                with_features = [with_feature_set(not_features = ["target_win7", "target_win8", "target_win10", "target_win11"])],
+            ),
+        ],
+    )
+
     target_win7_feature = feature(
         name = "target_win7",
         flag_sets = [
@@ -1796,6 +1815,7 @@ def _impl(ctx):
         cdecl_feature,
         stdcall_feature,
         target_win7_feature,
+        target_win7_default_feature,
         target_win8_feature,
         target_win10_feature,
         target_win11_feature,

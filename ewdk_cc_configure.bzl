@@ -1976,10 +1976,14 @@ def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
         repository_ctx: 
     """
     host_cpu = _get_cpu_value(repository_ctx)
-    if host_cpu == "x64_windows":
-        _configure_ewdk_cc(repository_ctx, host_cpu)
-    else:
+    if host_cpu != "x64_windows":
         repository_ctx.file("BUILD", "# EWDK C++ toolchain unsupported host platform")
+
+    ewdkdir = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR")
+    if not ewdkdir:
+        repository_ctx.file("BUILD", "# EWDKDIR envar not present")
+    else:
+        _configure_ewdk_cc(repository_ctx, host_cpu)
 
 ewdk_cc_autoconf_toolchains = repository_rule(
     implementation = _ewdk_cc_autoconf_toolchains_impl,

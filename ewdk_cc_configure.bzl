@@ -1927,6 +1927,10 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         repository_ctx.path(Label("//:resource_toolchain.bzl")),
         "resource_toolchain.bzl",
     )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:wpp_toolchain.bzl")),
+        "wpp_toolchain.bzl",
+    )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
 

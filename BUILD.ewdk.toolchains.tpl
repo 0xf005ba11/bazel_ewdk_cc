@@ -6,6 +6,7 @@
 load("@rules_cc//cc:defs.bzl", "cc_toolchain")
 load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config")
 load(":resource_toolchain.bzl", "resource_script_toolchain_config")
+load(":wpp_toolchain.bzl", "wpp_toolchain_config")
 
 filegroup(
     name = "empty",
@@ -450,4 +451,98 @@ toolchain(
     ],
     toolchain = ":ewdk_resource_script_toolchain_arm64",
     toolchain_type = ":resource_script_toolchain_type",
+)
+
+# tracewpp toolchain
+toolchain_type(
+    name = "wpp_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+# tracewpp x86 toolchain
+wpp_toolchain_config(
+    name = "ewdk_wpp_toolchain_x86",
+    tracewpp_path = "tracewpp_wrapper.bat",
+    env = _MSVC_ENV_APP_X86,
+    cfgdir = "%{msvc_tracewpp_cfgdir}",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-x86",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_32",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_x86",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+# tracewpp x64 toolchain
+wpp_toolchain_config(
+    name = "ewdk_wpp_toolchain_x64",
+    tracewpp_path = "tracewpp_wrapper.bat",
+    env = _MSVC_ENV_APP_X64,
+    cfgdir = "%{msvc_tracewpp_cfgdir}",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-x64",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_x64",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+# tracewpp arm toolchain
+wpp_toolchain_config(
+    name = "ewdk_wpp_toolchain_arm",
+    tracewpp_path = "tracewpp_wrapper.bat",
+    env = _MSVC_ENV_APP_ARM,
+    cfgdir = "%{msvc_tracewpp_cfgdir}",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-arm",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_arm",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+# tracewpp arm64 toolchain
+wpp_toolchain_config(
+    name = "ewdk_wpp_toolchain_arm64",
+    tracewpp_path = "tracewpp_wrapper.bat",
+    env = _MSVC_ENV_APP_ARM64,
+    cfgdir = "%{msvc_tracewpp_cfgdir}",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_arm64",
+    toolchain_type = ":wpp_toolchain_type",
 )

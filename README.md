@@ -7,12 +7,13 @@ Supports:
 * Building WDM drivers (KMDF not yet implemented)
 * Building applications, DLLs and static libraries.
 * Windows resource scripts.
+* WPP tracing
 * Cross-compiling to x86, x64, ARM and ARM64
 * Supports building on x64 hosts only.
 * Intellisense configurations for use with the EWDK.
 
 Supported bazel versions:
-* 6.0.0 - Built and tested with. Unknown if other versions work.
+* 6.0.0 - 6.2.0 - Built and tested with. Unknown if other versions work.
 
 ## Quick Start
 
@@ -48,6 +49,8 @@ If you have problems with toolchain selection (```--toolchain_resolution_debug=.
 ```
 build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 ```
+
+An [example project](https://github.com/0xf005ba11/bazel_example_project) is available that utilizes all the features.
 
 ## Building a WDM driver
 

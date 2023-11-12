@@ -163,6 +163,7 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
         env_map["VCINSTALLDIR_150"] = env_map["VCINSTALLDIR"]
     env_map["_MSBUILD_PATH"] = _get_exe_path(repository_ctx, "msbuild.exe", env_map)
     env_map["_RC_PATH"] = _get_exe_path(repository_ctx, "rc.exe", env_map)
+    env_map["_TRACEWPP_PATH"] = _get_exe_path(repository_ctx, "tracewpp.exe", env_map)
     return env_map
 
 def _get_exe_path(repository_ctx, filename, env):
@@ -1942,12 +1943,15 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
 
     # Now we produce the toolchain's BUILD file from the template
     binroot = env["VCTOOLSINSTALLDIR"].rstrip("\\").replace("\\", "/")
+    content_root = env["WINDOWSSDKDIR"].rstrip("\\").replace("\\", "/")
 
     platforms = ["x86", "x64", "arm", "arm64"]
     plat32 = ["x86", "arm"]
     tpl_vars = {
         "%{msvc_env_tmp}": env["TMP"].replace("\\", "\\\\"),
         "%{msvc_rc_path}": env["_RC_PATH"].replace("\\", "/"),
+        "%{msvc_tracewpp_path}": env["_TRACEWPP_PATH"].replace("\\", "/"),
+        "%{msvc_tracewpp_cfgdir}": "{}/bin/{}/wppconfig/rev1".format(content_root, env["VERSION_NUMBER"]).replace("/", "\\\\")
     }
     for platform in platforms:
         ml_name = "ml.exe" if platform in plat32 else "ml64.exe"
@@ -1966,6 +1970,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     repository_ctx.template("BUILD", tpl_path, tpl_vars)
 
     repository_ctx.file("rc_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_RC_PATH"])
+    repository_ctx.file("tracewpp_wrapper.bat", content = "@echo off\r\n\"%s\" %%3 %%4 %%5 %%6 %%7 %%8 %%9 && copy /Y /V \"%%1\" \"%%2\" >nul" % env["_TRACEWPP_PATH"])
 
     _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)
 

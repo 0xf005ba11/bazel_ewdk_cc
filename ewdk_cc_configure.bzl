@@ -528,7 +528,7 @@ def _impl(ctx):
     wdm_feature = feature(
         name = "wdm",
         provides = ["project_type"],
-        implies = ["wdm_entry"],
+        implies = ["wdm_entry", "disable_msvcrt"],
     )
 
     wdm_entry_feature = feature(
@@ -655,6 +655,18 @@ def _impl(ctx):
         ],
     )
 
+    # Older bazel (pre-6) forces static or dynamic msvcrt features in CcCommon.java.
+    #
+    # Specifically, if "static_link_msvcrt" is specified, then the compilation mode is checked
+    # and either "static_link_msvcrt_debug" or "static_link_msvcrt_no_debug" is set.
+    # If "static_link_msvcrt" is not set, then either "dynamic_link_msvcrt_debug" or
+    # "dynamic_link_msvcrt_no_debug" is set.
+    #
+    # This logic also means fastbuild will always specify a *_no_debug variant.
+    #
+    # This feature can be used to disable all msvcrt features on older bazel.
+    disable_msvcrt_feature = feature(name = "disable_msvcrt")
+
     static_link_msvcrt_feature = feature(
         name = "static_link_msvcrt",
         flag_sets = [
@@ -662,30 +674,45 @@ def _impl(ctx):
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MTd"])],
                 with_features = [
-                    with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt_no_debug"]),
-                    with_feature_set(features = ["fastbuild"], not_features = ["static_link_msvcrt_no_debug"]),
+                    with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt_no_debug", "disable_msvcrt"]),
+                    with_feature_set(features = ["fastbuild"], not_features = ["static_link_msvcrt_no_debug", "disable_msvcrt"]),
                 ],
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MT"])],
-                with_features = [with_feature_set(features = ["opt"], not_features = ["static_link_msvcrt_no_debug"])],
+                with_features = [with_feature_set(features = ["opt"], not_features = ["static_link_msvcrt_no_debug", "disable_msvcrt"])],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmtd.lib"])],
                 with_features = [
-                    with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt_no_debug"]),
-                    with_feature_set(features = ["fastbuild"], not_features = ["static_link_msvcrt_no_debug"]),
+                    with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt_no_debug", "disable_msvcrt"]),
+                    with_feature_set(features = ["fastbuild"], not_features = ["static_link_msvcrt_no_debug", "disable_msvcrt"]),
                 ],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmt.lib"])],
-                with_features = [with_feature_set(features = ["opt"], not_features = ["static_link_msvcrt_no_debug"])],
+                with_features = [with_feature_set(features = ["opt"], not_features = ["static_link_msvcrt_no_debug", "disable_msvcrt"])],
             ),
         ],
-        provides = ["link_msvcrt"],
+    )
+
+    static_link_msvcrt_debug_feature = feature(
+        name = "static_link_msvcrt_debug",
+        flag_sets = [
+            flag_set(
+                actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
+                flag_groups = [flag_group(flags = ["/MTd"])],
+                with_features = [with_feature_set(not_features = ["static_link_msvcrt", "static_link_msvcrt_no_debug", "disable_msvcrt"])],
+            ),
+            flag_set(
+                actions = all_link_actions,
+                flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmtd.lib"])],
+                with_features = [with_feature_set(not_features = ["static_link_msvcrt", "static_link_msvcrt_no_debug", "disable_msvcrt"])],
+            ),
+        ],
     )
 
     static_link_msvcrt_no_debug_feature = feature(
@@ -694,14 +721,22 @@ def _impl(ctx):
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MT"])],
+                with_features = [with_feature_set(not_features = ["disable_msvcrt"])],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmt.lib"])],
+                with_features = [with_feature_set(not_features = ["disable_msvcrt"])],
             ),
         ],
-        implies = ["static_link_msvcrt"],
     )
+
+    static_disable_dynamic_msvcrt_features = [
+        "disable_msvcrt",
+        "static_link_msvcrt",
+        "static_link_msvcrt_debug",
+        "static_link_msvcrt_no_debug",
+    ]
 
     dynamic_link_msvcrt_feature = feature(
         name = "dynamic_link_msvcrt",
@@ -710,30 +745,45 @@ def _impl(ctx):
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MDd"])],
                 with_features = [
-                    with_feature_set(features = ["dbg"], not_features = ["dynamic_link_msvcrt_no_debug"]),
-                    with_feature_set(features = ["fastbuild"], not_features = ["dynamic_link_msvcrt_no_debug"]),
+                    with_feature_set(features = ["dbg"], not_features = ["dynamic_link_msvcrt_no_debug"] + static_disable_dynamic_msvcrt_features),
+                    with_feature_set(features = ["fastbuild"], not_features = ["dynamic_link_msvcrt_no_debug"] + static_disable_dynamic_msvcrt_features),
                 ],
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MD"])],
-                with_features = [with_feature_set(features = ["opt"], not_features = ["dynamic_link_msvcrt_no_debug"])],
+                with_features = [with_feature_set(features = ["opt"], not_features = ["dynamic_link_msvcrt_no_debug"] + static_disable_dynamic_msvcrt_features)],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrtd.lib"])],
                 with_features = [
-                    with_feature_set(features = ["dbg"], not_features = ["dynamic_link_msvcrt_no_debug"]),
-                    with_feature_set(features = ["fastbuild"], not_features = ["dynamic_link_msvcrt_no_debug"]),
+                    with_feature_set(features = ["dbg"], not_features = ["dynamic_link_msvcrt_no_debug"] + static_disable_dynamic_msvcrt_features),
+                    with_feature_set(features = ["fastbuild"], not_features = ["dynamic_link_msvcrt_no_debug"] + static_disable_dynamic_msvcrt_features),
                 ],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrt.lib"])],
-                with_features = [with_feature_set(features = ["opt"], not_features = ["dynamic_link_msvcrt_no_debug"])],
+                with_features = [with_feature_set(features = ["opt"], not_features = ["dynamic_link_msvcrt_no_debug"] + static_disable_dynamic_msvcrt_features)],
             ),
         ],
-        provides = ["link_msvcrt"],
+    )
+
+    dynamic_link_msvcrt_debug_feature = feature(
+        name = "dynamic_link_msvcrt_debug",
+        flag_sets = [
+            flag_set(
+                actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
+                flag_groups = [flag_group(flags = ["/MDd"])],
+                with_features = [with_feature_set(not_features = ["dynamic_link_msvcrt"] + static_disable_dynamic_msvcrt_features)],
+            ),
+            flag_set(
+                actions = all_link_actions,
+                flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrtd.lib"])],
+                with_features = [with_feature_set(not_features = ["dynamic_link_msvcrt"] + static_disable_dynamic_msvcrt_features)],
+            ),
+        ],
     )
 
     dynamic_link_msvcrt_no_debug_feature = feature(
@@ -742,13 +792,14 @@ def _impl(ctx):
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MD"])],
+                with_features = [with_feature_set(not_features = ["dynamic_link_msvcrt_debug"] + static_disable_dynamic_msvcrt_features)],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrt.lib"])],
+                with_features = [with_feature_set(not_features = ["dynamic_link_msvcrt_debug"] + static_disable_dynamic_msvcrt_features)],
             ),
         ],
-        implies = ["dynamic_link_msvcrt"],
     )
 
     subsystem_console_feature = feature(
@@ -1803,9 +1854,12 @@ def _impl(ctx):
         msvc_enable_minmax_feature,
         msvc_no_minmax_feature,
         msvc_profile_feature,
+        disable_msvcrt_feature,
         static_link_msvcrt_feature,
+        static_link_msvcrt_debug_feature,
         static_link_msvcrt_no_debug_feature,
         dynamic_link_msvcrt_feature,
+        dynamic_link_msvcrt_debug_feature,
         dynamic_link_msvcrt_no_debug_feature,
         subsystem_console_feature,
         subsystem_windows_feature,
@@ -1955,7 +2009,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         "%{msvc_env_tmp}": env["TMP"].replace("\\", "\\\\"),
         "%{msvc_rc_path}": env["_RC_PATH"].replace("\\", "/"),
         "%{msvc_tracewpp_path}": env["_TRACEWPP_PATH"].replace("\\", "/"),
-        "%{msvc_tracewpp_cfgdir}": "{}/bin/{}/wppconfig/rev1".format(content_root, env["VERSION_NUMBER"]).replace("/", "\\\\")
+        "%{msvc_tracewpp_cfgdir}": "{}/bin/{}/wppconfig/rev1".format(content_root, env["VERSION_NUMBER"]).replace("/", "\\\\"),
     }
     for platform in platforms:
         ml_name = "ml.exe" if platform in plat32 else "ml64.exe"

@@ -8,12 +8,13 @@ Supports:
 * Building applications, DLLs and static libraries.
 * Windows resource scripts.
 * WPP tracing
+* IDL compiling (midl)
 * Cross-compiling to x86, x64, ARM and ARM64
 * Supports building on x64 hosts only.
 * Intellisense configurations for use with the EWDK.
 
 Supported bazel versions:
-* 6.0.0 - 6.2.0 - Built and tested with. Unknown if other versions work.
+* 5.1.0 - 6.2.0 - Built and tested with. Unknown if other versions work.
 
 ## Quick Start
 

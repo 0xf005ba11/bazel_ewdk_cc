@@ -7,6 +7,8 @@ load("@rules_cc//cc:defs.bzl", "cc_toolchain")
 load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config")
 load(":resource_toolchain.bzl", "resource_script_toolchain_config")
 load(":wpp_toolchain.bzl", "wpp_toolchain_config")
+load(":idl_toolchain.bzl", "idl_toolchain_config")
+
 
 filegroup(
     name = "empty",
@@ -545,4 +547,94 @@ toolchain(
     ],
     toolchain = ":ewdk_wpp_toolchain_arm64",
     toolchain_type = ":wpp_toolchain_type",
+)
+
+# idl toolchain
+toolchain_type(
+    name = "idl_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+# idl x86 toolchain
+idl_toolchain_config(
+    name = "ewdk_idl_toolchain_x86",
+    midl_path = "midl_wrapper.bat",
+    msvc_env_app = _MSVC_ENV_APP_X86,
+    msvc_env_wdm = _MSVC_ENV_WDM_X86,
+    arch_opts = [
+        "/Di386",
+        "/D_X86_",
+        "/env", "win32",
+        "/win32",
+    ],
+)
+
+toolchain(
+    name = "ewdk-idl-toolchain-x86",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_32",
+    ],
+    toolchain = ":ewdk_idl_toolchain_x86",
+    toolchain_type = ":idl_toolchain_type",
+)
+
+# idl x64 toolchain
+idl_toolchain_config(
+    name = "ewdk_idl_toolchain_x64",
+    midl_path = "midl_wrapper.bat",
+    msvc_env_app = _MSVC_ENV_APP_X64,
+    msvc_env_wdm = _MSVC_ENV_WDM_X64,
+    arch_opts = [
+        "/D_AMD64_",
+        "/D_WIN64",
+        "/env", "x64",
+        "/amd64",
+    ],
+)
+
+toolchain(
+    name = "ewdk-idl-toolchain-x64",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+    toolchain = ":ewdk_idl_toolchain_x64",
+    toolchain_type = ":idl_toolchain_type",
+)
+
+# idl arm64 toolchain
+idl_toolchain_config(
+    name = "ewdk_idl_toolchain_arm64",
+    midl_path = "midl_wrapper.bat",
+    msvc_env_app = _MSVC_ENV_APP_ARM64,
+    msvc_env_wdm = _MSVC_ENV_WDM_ARM64,
+    arch_opts = [
+        "/D_ARM64_",
+        "/DARM64",
+        "/DSTD_CALL",
+        "/env", "arm64",
+    ],
+)
+
+toolchain(
+    name = "ewdk-idl-toolchain-arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+    ],
+    toolchain = ":ewdk_idl_toolchain_arm64",
+    toolchain_type = ":idl_toolchain_type",
 )

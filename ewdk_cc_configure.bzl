@@ -164,6 +164,7 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
     env_map["_MSBUILD_PATH"] = _get_exe_path(repository_ctx, "msbuild.exe", env_map)
     env_map["_RC_PATH"] = _get_exe_path(repository_ctx, "rc.exe", env_map)
     env_map["_TRACEWPP_PATH"] = _get_exe_path(repository_ctx, "tracewpp.exe", env_map)
+    env_map["_MIDL_PATH"] = _get_exe_path(repository_ctx, "midl.exe", env_map)
     return env_map
 
 def _get_exe_path(repository_ctx, filename, env):
@@ -1985,6 +1986,10 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         repository_ctx.path(Label("//:wpp_toolchain.bzl")),
         "wpp_toolchain.bzl",
     )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:idl_toolchain.bzl")),
+        "idl_toolchain.bzl",
+    )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
 
@@ -2010,6 +2015,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         "%{msvc_rc_path}": env["_RC_PATH"].replace("\\", "/"),
         "%{msvc_tracewpp_path}": env["_TRACEWPP_PATH"].replace("\\", "/"),
         "%{msvc_tracewpp_cfgdir}": "{}/bin/{}/wppconfig/rev1".format(content_root, env["VERSION_NUMBER"]).replace("/", "\\\\"),
+        "%{msvc_midl_path}": env["_MIDL_PATH"].replace("\\", "/"),
     }
     for platform in platforms:
         ml_name = "ml.exe" if platform in plat32 else "ml64.exe"
@@ -2029,6 +2035,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
 
     repository_ctx.file("rc_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_RC_PATH"])
     repository_ctx.file("tracewpp_wrapper.bat", content = "@echo off\r\n\"%s\" %%3 %%4 %%5 %%6 %%7 %%8 %%9 && copy /Y /V \"%%1\" \"%%2\" >nul" % env["_TRACEWPP_PATH"])
+    repository_ctx.file("midl_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_MIDL_PATH"])
 
     _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)
 

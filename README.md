@@ -168,7 +168,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * /DCOMPILER_MSVC
 * /bigobj
 * /Zm500
-* /EHsc - non-```wdm``` builds only
+* /EHsc - non-```wdm``` builds only. Disable with no_default_cpp_unwinding
 * /DNOMINMAX - use the msvc_enable_minmax feature to re-enable these macros
 * /FC
 * /Zc:wchar_t

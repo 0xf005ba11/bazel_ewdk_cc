@@ -1608,7 +1608,7 @@ def _impl(ctx):
                             "/NODEFAULTLIB",
                             "/SECTION:INIT,d",
                             "/MERGE:_TEXT=.text;_PAGE=PAGE",
-                        ] + default_wdm_libs,
+                        ] + ctx.attr.arch_link_opts_wdm + default_wdm_libs,
                     ),
                 ],
                 with_features = [with_feature_set(features = ["wdm"])],
@@ -1995,6 +1995,7 @@ ewdk_cc_toolchain_config = rule(
         "msvc_env_wdm": attr.string_dict(),
         "msvc_env_app": attr.string_dict(),
         "arch_c_opts_wdm": attr.string_list(default = []),
+        "arch_link_opts_wdm": attr.string_list(default = []),
         "tool_paths": attr.string_dict(),
     },
 )

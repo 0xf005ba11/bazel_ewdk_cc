@@ -256,3 +256,4 @@ When building for ARM64 (WDM drivers):
 * ntoskrnl.lib
 * hal.lib
 * wmilib.lib
+* arm64rt.lib - arm64 only

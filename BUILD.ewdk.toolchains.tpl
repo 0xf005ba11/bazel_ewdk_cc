@@ -271,6 +271,9 @@ ewdk_cc_toolchain_config(
         "/DSTD_CALL",
         "/Zp8",
     ],
+    arch_link_opts_wdm = [
+        "arm64rt.lib",
+    ],
     cetcompat_option = "/CETCOMPAT:NO",
     cpu = "arm64_windows",
     entry_symbol_suffix = "",

@@ -60,7 +60,7 @@ The easiest way to do this is to build a DLL (```linkedshared = True```) and inc
 For example:
 ```starlark
 cc_binary(
-    name = "sys",
+    name = "sys-dll",
     srcs = glob(["*.cpp"]),
     features = [
         "wdm",
@@ -81,6 +81,18 @@ cc_binary(
 ```
 
 This will result in a ```sys.dll``` being built. Bazel doesn't currently understand the ```.sys``` extension directly in a ```cc_binary``` rule.
+
+The following is an example that can copy the result ```sys.dll``` to ```sys.sys``` and sign the driver with a WDK-produced certificate. Here ```ewdk_command``` is similar to ```genrule```, but has the EWDK environment available.
+```starlark
+load("@bazel_ewdk_cc//:ewdk_command.bzl", "ewdk_command")
+
+ewdk_command(
+    name = "sys",
+    srcs = [":sys-dll"],
+    outs = ["sys.sys"],
+    cmd = "copy /y \"$(locations :sys-dll)\" \"$(locations :sys.sys)\" && SignTool.exe sign /ph /fd sha256 /n WDKTestCert \"$(locations :sys.sys)\"",
+)
+```
 
 ## Building an executable
 

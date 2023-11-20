@@ -536,6 +536,7 @@ def _impl(ctx):
             "wdm_entry",
             "disable_msvcrt",
             "no_default_cpp_unwinding",
+            "no_runtime_checks",
         ],
     )
 
@@ -631,6 +632,8 @@ def _impl(ctx):
             ),
         ],
     )
+
+    no_runtime_checks_feature = feature(name = "no_runtime_checks")
 
     msvc_enable_minmax_feature = feature(name = "msvc_enable_minmax")
 
@@ -1790,7 +1793,7 @@ def _impl(ctx):
         flag_set(
             actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
             flag_groups = [flag_group(flags = ["/RTC1"])],
-            with_features = [with_feature_set(not_features = ["wdm"])],
+            with_features = [with_feature_set(not_features = ["wdm", "no_runtime_checks"])],
         ),
         flag_set(
             actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
@@ -1879,6 +1882,7 @@ def _impl(ctx):
         wdm_entry_feature,
         msvc_env_feature,
         preprocessor_defines_feature,
+        no_runtime_checks_feature,
         msvc_enable_minmax_feature,
         msvc_no_minmax_feature,
         msvc_profile_feature,

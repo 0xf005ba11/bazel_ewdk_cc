@@ -8,12 +8,17 @@ load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config")
 load(":resource_toolchain.bzl", "resource_script_toolchain_config")
 load(":wpp_toolchain.bzl", "wpp_toolchain_config")
 load(":idl_toolchain.bzl", "idl_toolchain_config")
+load(":ewdk_command.bzl", "ewdk_command_config")
 
 
 filegroup(
     name = "empty",
     srcs = [],
 )
+
+_EWDK_LAUNCH_ENV = {
+%{ewdk_launch_env}
+}
 
 _MSVC_ENV_WDM_X86 = {
     "PATH": "%{msvc_env_path_wdm_x86}",
@@ -637,4 +642,29 @@ toolchain(
     ],
     toolchain = ":ewdk_idl_toolchain_arm64",
     toolchain_type = ":idl_toolchain_type",
+)
+
+# ewdk command
+toolchain_type(
+    name = "ewdk_command_type",
+    visibility = ["//visibility:public"],
+)
+
+ewdk_command_config(
+    name = "ewdk_command_toolchain",
+    command_path = "ewdk_command.bat",
+    launch_env = _EWDK_LAUNCH_ENV,
+)
+
+toolchain(
+    name = "ewdk-command-toolchain",
+    exec_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+    ],
+    toolchain = ":ewdk_command_toolchain",
+    toolchain_type = "ewdk_command_type",
 )

@@ -161,11 +161,14 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
         env_map["VCINSTALLDIR_160"] = env_map["VCINSTALLDIR"]
     elif vsversion == "15.0":
         env_map["VCINSTALLDIR_150"] = env_map["VCINSTALLDIR"]
+    env_str = ""
+    for k,v in env_map.items():
+        env_str += "    \"{}\": \"{}\",\r\n".format(k,v)
     env_map["_MSBUILD_PATH"] = _get_exe_path(repository_ctx, "msbuild.exe", env_map)
     env_map["_RC_PATH"] = _get_exe_path(repository_ctx, "rc.exe", env_map)
     env_map["_TRACEWPP_PATH"] = _get_exe_path(repository_ctx, "tracewpp.exe", env_map)
     env_map["_MIDL_PATH"] = _get_exe_path(repository_ctx, "midl.exe", env_map)
-    return env_map
+    return (env_map, env_str)
 
 def _get_exe_path(repository_ctx, filename, env):
     """Retrieve the path to the given exe"""
@@ -1990,6 +1993,10 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         repository_ctx.path(Label("//:idl_toolchain.bzl")),
         "idl_toolchain.bzl",
     )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:ewdk_command.bzl")),
+        "ewdk_command.bzl",
+    )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
 
@@ -1998,7 +2005,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     ewdkdir = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR")
     if not ewdkdir:
         fail("EWDKDIR envvar undefined. Please define to point to the root of the EWDK.")
-    env = _get_ewdk_env(repository_ctx, ewdkdir, host_cpu)
+    (env, env_str) = _get_ewdk_env(repository_ctx, ewdkdir, host_cpu)
 
     # Next we need to get the relevant env vars set by msbuild for the various project types we will support.
     # This is currently limited to project types "Application" and "Driver" (WDM driver type only).
@@ -2011,6 +2018,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     platforms = ["x86", "x64", "arm", "arm64"]
     plat32 = ["x86", "arm"]
     tpl_vars = {
+        "%{ewdk_launch_env}": env_str.replace("\\", "\\\\"),
         "%{msvc_env_tmp}": env["TMP"].replace("\\", "\\\\"),
         "%{msvc_rc_path}": env["_RC_PATH"].replace("\\", "/"),
         "%{msvc_tracewpp_path}": env["_TRACEWPP_PATH"].replace("\\", "/"),
@@ -2036,6 +2044,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     repository_ctx.file("rc_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_RC_PATH"])
     repository_ctx.file("tracewpp_wrapper.bat", content = "@echo off\r\n\"%s\" %%3 %%4 %%5 %%6 %%7 %%8 %%9 && copy /Y /V \"%%1\" \"%%2\" >nul" % env["_TRACEWPP_PATH"])
     repository_ctx.file("midl_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_MIDL_PATH"])
+    repository_ctx.file("ewdk_command.bat", content = "@echo off\r\n%*\r\n")
 
     _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)
 

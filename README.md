@@ -152,6 +152,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * cpp20 - /std:c++20
 * disable_msvcrt - Bazel 5.x forces msvcrt linkage. This can be used to disable the usage. Default for `wdm`.
 * msvc_enable_minmax - Enable the windows SDK min and max macros (they are disabled by default with /DNOMINMAX)
+* no_default_cpp_unwinding - Disable the /EHsc option which is enabled by default on non-`wdm` builds
 * win32_lean_and_mean - /DWIN32_LEAN_AND_MEAN=1
 * buffer_security_checks - /GS
 * sdl_security_checks - /sdl

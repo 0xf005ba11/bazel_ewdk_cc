@@ -162,8 +162,8 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
     elif vsversion == "15.0":
         env_map["VCINSTALLDIR_150"] = env_map["VCINSTALLDIR"]
     env_str = ""
-    for k,v in env_map.items():
-        env_str += "    \"{}\": \"{}\",\r\n".format(k,v)
+    for k, v in env_map.items():
+        env_str += "    \"{}\": \"{}\",\r\n".format(k, v)
     env_map["_MSBUILD_PATH"] = _get_exe_path(repository_ctx, "msbuild.exe", env_map)
     env_map["_RC_PATH"] = _get_exe_path(repository_ctx, "rc.exe", env_map)
     env_map["_TRACEWPP_PATH"] = _get_exe_path(repository_ctx, "tracewpp.exe", env_map)
@@ -532,7 +532,11 @@ def _impl(ctx):
     wdm_feature = feature(
         name = "wdm",
         provides = ["project_type"],
-        implies = ["wdm_entry", "disable_msvcrt"],
+        implies = [
+            "wdm_entry",
+            "disable_msvcrt",
+            "no_default_cpp_unwinding",
+        ],
     )
 
     wdm_entry_feature = feature(
@@ -645,6 +649,27 @@ def _impl(ctx):
                 ],
                 flag_groups = [flag_group(flags = ["/DNOMINMAX"])],
                 with_features = [with_feature_set(not_features = ["msvc_enable_minmax"])],
+            ),
+        ],
+    )
+
+    no_default_cpp_unwinding_feature = feature(name = "no_default_cpp_unwinding")
+
+    default_cpp_unwinding_feature = feature(
+        name = "default_cpp_unwinding",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                ],
+                flag_groups = [flag_group(flags = ["/EHsc"])],
+                with_features = [with_feature_set(not_features = ["no_default_cpp_unwinding"])],
             ),
         ],
     )
@@ -1388,7 +1413,6 @@ def _impl(ctx):
                             "/DCOMPILER_MSVC",
                             "/bigobj",
                             "/Zm500",
-                            "/EHsc",
                             "/FC",
                             "/Zc:wchar_t",
                             "/Gm-",
@@ -1858,6 +1882,8 @@ def _impl(ctx):
         msvc_enable_minmax_feature,
         msvc_no_minmax_feature,
         msvc_profile_feature,
+        no_default_cpp_unwinding_feature,
+        default_cpp_unwinding_feature,
         disable_msvcrt_feature,
         static_link_msvcrt_feature,
         static_link_msvcrt_debug_feature,

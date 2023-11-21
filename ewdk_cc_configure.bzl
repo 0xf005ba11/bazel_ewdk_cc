@@ -2030,6 +2030,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         "ewdk_command.bzl",
     )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
+    arm_asm = repository_ctx.path(Label("//:arm_asm.bat.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
 
     # First, we need to get the envvars from executing the EWDK LaunchBuildEnv.cmd.
@@ -2047,8 +2048,10 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     binroot = env["VCTOOLSINSTALLDIR"].rstrip("\\").replace("\\", "/")
     content_root = env["WINDOWSSDKDIR"].rstrip("\\").replace("\\", "/")
 
-    platforms = ["x86", "x64", "arm", "arm64"]
+    intels = ["x86", "x64"]
+    arms = ["arm", "arm64"]
     plat32 = ["x86", "arm"]
+    platforms = intels + arms
     tpl_vars = {
         "%{ewdk_launch_env}": env_str.replace("\\", "\\\\"),
         "%{msvc_env_tmp}": env["TMP"].replace("\\", "\\\\"),
@@ -2058,11 +2061,15 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         "%{msvc_midl_path}": env["_MIDL_PATH"].replace("\\", "/"),
     }
     for platform in platforms:
-        ml_name = "ml.exe" if platform in plat32 else "ml64.exe"
         tpl_vars["%%{msvc_lib_path_%s}" % platform] = "{}/bin/HostX64/{}/lib.exe".format(binroot, platform)
-        tpl_vars["%%{msvc_ml_path_%s}" % platform] = "{}/bin/HostX64/{}/{}".format(binroot, platform, ml_name)
         tpl_vars["%%{msvc_cl_path_%s}" % platform] = "{}/bin/HostX64/{}/cl.exe".format(binroot, platform)
         tpl_vars["%%{msvc_link_path_%s}" % platform] = "{}/bin/HostX64/{}/link.exe".format(binroot, platform)
+        if platform in arms:
+            asm_name = "armasm.exe" if platform in plat32 else "armasm64.exe"
+            tpl_vars["%%{msvc_armasm_path_%s}" % platform] = "{}/bin/HostX64/{}/{}".format(binroot, platform, asm_name)
+        else:
+            ml_name = "ml.exe" if platform in plat32 else "ml64.exe"
+            tpl_vars["%%{msvc_ml_path_%s}" % platform] = "{}/bin/HostX64/{}/{}".format(binroot, platform, ml_name)
 
     for platform, buildenv in build_envs.items():
         include = buildenv["INCLUDE"]
@@ -2072,6 +2079,11 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         tpl_vars["%%{msvc_env_libpath_%s}" % platform] = buildenv["LIBPATH"].replace("\\", "\\\\")
         tpl_vars["%%{msvc_env_lib_%s}" % platform] = buildenv["LIB"].replace("\\", "\\\\")
     repository_ctx.template("BUILD", tpl_path, tpl_vars)
+
+    arm_vars = {"%{cl_path}": tpl_vars["%{msvc_cl_path_arm}"], "%{armasm_path}": tpl_vars["%{msvc_armasm_path_arm}"]}
+    arm64_vars = {"%{cl_path}": tpl_vars["%{msvc_cl_path_arm64}"], "%{armasm_path}": tpl_vars["%{msvc_armasm_path_arm64}"]}
+    repository_ctx.template("arm_asm.bat", arm_asm, arm_vars)
+    repository_ctx.template("arm_asm64.bat", arm_asm, arm64_vars)
 
     repository_ctx.file("rc_wrapper.bat", content = "@echo off\r\n\"%s\" %%*\r\n" % env["_RC_PATH"])
     repository_ctx.file("tracewpp_wrapper.bat", content = "@echo off\r\n\"%s\" %%3 %%4 %%5 %%6 %%7 %%8 %%9 && copy /Y /V \"%%1\" \"%%2\" >nul" % env["_TRACEWPP_PATH"])

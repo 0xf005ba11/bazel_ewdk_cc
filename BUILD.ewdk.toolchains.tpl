@@ -120,7 +120,7 @@ _TOOL_PATHS_X64 = {
 
 _TOOL_PATHS_ARM = {
     "ar": "%{msvc_lib_path_arm}",
-    "ml": "%{msvc_ml_path_arm}",
+    "ml": "arm_asm.bat",
     "cpp": "%{msvc_cl_path_arm}",
     "gcc": "%{msvc_cl_path_arm}",
     "ld": "%{msvc_link_path_arm}",
@@ -133,7 +133,7 @@ _TOOL_PATHS_ARM = {
 
 _TOOL_PATHS_ARM64 = {
     "ar": "%{msvc_lib_path_arm64}",
-    "ml": "%{msvc_ml_path_arm64}",
+    "ml": "arm_asm64.bat",
     "cpp": "%{msvc_cl_path_arm64}",
     "gcc": "%{msvc_cl_path_arm64}",
     "ld": "%{msvc_link_path_arm64}",

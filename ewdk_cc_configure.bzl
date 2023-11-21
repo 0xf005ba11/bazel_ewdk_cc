@@ -1797,7 +1797,7 @@ def _impl(ctx):
         ),
         flag_set(
             actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-            flag_groups = [flag_group(flags = ["/DMSC_NOOPT", "/DDBG=1"])],
+            flag_groups = [flag_group(flags = ["/DMSC_NOOPT", "/DDBG=1", "/D_DEBUG=1"])],
             with_features = [with_feature_set(features = ["wdm"])],
         ),
     ]

@@ -62,8 +62,8 @@ if not "%incdirs%"=="" (
     set incdirs=-i "%incdirs%"
 )
 
-"%{cl_path}" /nologo /c /P %cl_incdirs% /Fi"%input%.preprocessed.asm" /TC "%input%" && (
-    "%{armasm_path}"%userargs% %incdirs% "%input%.preprocessed.asm" "%output%"
+"%{cl_path}" /nologo /c /P %cl_incdirs% /Fi"%output%.preprocessed.asm" /TC "%input%" && (
+    "%{armasm_path}"%userargs% %incdirs% "%output%.preprocessed.asm" "%output%"
 ) || (
     exit 1
 )

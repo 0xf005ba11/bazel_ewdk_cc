@@ -325,6 +325,9 @@ ewdk_cc_toolchain_config(
         "/DSTD_CALL",
         "/Zp8",
     ],
+    arch_link_opts = [
+        "armrt.lib",
+    ],
     cetcompat_option = "/CETCOMPAT:NO",
     cpu = "arm_windows",
     entry_symbol_suffix = "",

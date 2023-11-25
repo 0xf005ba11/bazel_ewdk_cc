@@ -131,7 +131,7 @@ def _compile_idl(ctx, tc, input):
     }
 
 def _impl(ctx):
-    tc = ctx.toolchains["@ewdk_cc_configured_toolchain//:idl_toolchain_type"].idlinfo
+    tc = ctx.toolchains["@ewdk_cc//:idl_toolchain_type"].idlinfo
 
     inputs = []
     for x in ctx.attr.srcs:
@@ -171,5 +171,5 @@ idl_script = rule(
         "disable_default_opts": attr.bool(default = False),
         "disable_arch_opts": attr.bool(default = False),
     },
-    toolchains = ["@ewdk_cc_configured_toolchain//:idl_toolchain_type"],
+    toolchains = ["@ewdk_cc//:idl_toolchain_type"],
 )

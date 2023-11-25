@@ -2098,13 +2098,15 @@ def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     Args:
         repository_ctx: 
     """
+    noewdk_path = repository_ctx.path(Label("//:BUILD.no_ewdk"))
+
     host_cpu = _get_cpu_value(repository_ctx)
     if host_cpu != "x64_windows":
-        repository_ctx.file("BUILD", "# EWDK C++ toolchain unsupported host platform")
+        repository_ctx.template("BUILD", noewdk_path, {})
 
     ewdkdir = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR")
     if not ewdkdir:
-        repository_ctx.file("BUILD", "# EWDKDIR envar not present")
+        repository_ctx.template("BUILD", noewdk_path, {})
     else:
         _configure_ewdk_cc(repository_ctx, host_cpu)
 
@@ -2114,7 +2116,7 @@ ewdk_cc_autoconf_toolchains = repository_rule(
     configure = True,
 )
 
-def register_ewdk_cc_toolchains(name = "ewdk_cc_configured_toolchain"):
+def register_ewdk_cc_toolchains(name = "ewdk_cc"):
     """Register EWDK C++ toolchains"""
     ewdk_cc_autoconf_toolchains(name = name)
     native.register_toolchains("@%s//:all" % name)

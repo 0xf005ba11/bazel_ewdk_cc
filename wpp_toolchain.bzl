@@ -59,7 +59,7 @@ def _compile_wpp(ctx, tc, cfg, input, output):
     return output_file
 
 def _impl(ctx):
-    tc = ctx.toolchains["@ewdk_cc_configured_toolchain//:wpp_toolchain_type"].wppinfo
+    tc = ctx.toolchains["@ewdk_cc//:wpp_toolchain_type"].wppinfo
 
     inputs = []
     for x in ctx.attr.srcs:
@@ -107,5 +107,5 @@ wpp_trace = rule(
         "dll": attr.bool(default = False),
     },
     fragments = ["c", "cpp"],
-    toolchains = ["@ewdk_cc_configured_toolchain//:wpp_toolchain_type"],
+    toolchains = ["@ewdk_cc//:wpp_toolchain_type"],
 )

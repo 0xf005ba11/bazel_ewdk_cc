@@ -67,7 +67,7 @@ def _compile_rc(ctx, tc):
     return output
 
 def _resource_script_impl(ctx):
-    tc = ctx.toolchains["@ewdk_cc_configured_toolchain//:resource_script_toolchain_type"].rcinfo
+    tc = ctx.toolchains["@ewdk_cc//:resource_script_toolchain_type"].rcinfo
 
     files = [_compile_rc(ctx, tc)]
     linker_input = cc_common.create_linker_input(
@@ -92,5 +92,5 @@ resource_script = rule(
         "deps": attr.label_list(allow_files = True),
     },
     fragments = ["cpp"],
-    toolchains = ["@ewdk_cc_configured_toolchain//:resource_script_toolchain_type"],
+    toolchains = ["@ewdk_cc//:resource_script_toolchain_type"],
 )

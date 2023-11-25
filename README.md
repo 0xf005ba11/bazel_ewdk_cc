@@ -133,7 +133,7 @@ resource_script(
 When the toolchain is registered, it will emit a ```c_cpp_properties.json``` in its output folder that contains intellisense configurations for windows. This file can be copied into place with something like:
 
 ```powershell
-copy "$(bazel info output_base)/external/ewdk_cc_configured_toolchain/c_cpp_properties.json" "./.vscode/c_cpp_properties.json"
+copy "$(bazel info output_base)/external/ewdk_cc/c_cpp_properties.json" "./.vscode/c_cpp_properties.json"
 ```
 
 This file will only change if the EWDK location changes, so it is recommended to modify it as you see fit. Consider it a starting point for your configuration. Additionally, these settings will be imperfect as the kernel-mode CRT is not included to avoid conflicting with the regular CRT.  However, they should work well enough.

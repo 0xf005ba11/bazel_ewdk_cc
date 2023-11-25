@@ -64,7 +64,7 @@ def _parse_args(cmd):
     return args
 
 def _impl(ctx):
-    tc = ctx.toolchains["@ewdk_cc_configured_toolchain//:ewdk_command_type"].idlinfo
+    tc = ctx.toolchains["@ewdk_cc//:ewdk_command_type"].idlinfo
 
     args = []
     for x in _parse_args(ctx.attr.cmd):
@@ -99,5 +99,5 @@ ewdk_command = rule(
         ),
         "cmd": attr.string(mandatory = True),
     },
-    toolchains = ["@ewdk_cc_configured_toolchain//:ewdk_command_type"],
+    toolchains = ["@ewdk_cc//:ewdk_command_type"],
 )

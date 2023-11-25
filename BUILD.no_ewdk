@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 Ira Strawser
+# SPDX-License-Identifier: MIT
+
+# EWDKDIR envvar not set. Toolchains unavailable.
+
+constraint_setting(
+    name = "ewdk_toolchain",
+    visibility = ["//visibility:public"],
+)
+
+constraint_value(
+    name = "ewdk_cc",
+    constraint_setting = ":ewdk_toolchain",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_type(
+    name = "resource_script_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_type(
+    name = "wpp_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_type(
+    name = "idl_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_type(
+    name = "ewdk_command_type",
+    visibility = ["//visibility:public"],
+)

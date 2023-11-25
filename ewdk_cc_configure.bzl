@@ -103,6 +103,17 @@ all_link_actions = [
     ACTION_NAMES.cpp_link_nodeps_dynamic_library,
 ]
 
+def _empty_impl(ctx):
+    file = ctx.actions.declare_file("empty_exec.bat")
+    ctx.actions.write(
+        output = file,
+        content = "",
+        is_executable = True,
+    )
+    return [DefaultInfo(executable = file)]
+
+empty = rule(implementation = _empty_impl)
+
 def _get_envvar(env, name, default = None):
     for k, v in env.items():
         if k.lower() == name.lower():
@@ -2009,26 +2020,6 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         host_cpu: Build execution cpu (e.g. x64_windows)
     """
 
-    repository_ctx.symlink(
-        repository_ctx.path(Label("//:ewdk_cc_configure.bzl")),
-        "ewdk_cc_configure.bzl",
-    )
-    repository_ctx.symlink(
-        repository_ctx.path(Label("//:resource_toolchain.bzl")),
-        "resource_toolchain.bzl",
-    )
-    repository_ctx.symlink(
-        repository_ctx.path(Label("//:wpp_toolchain.bzl")),
-        "wpp_toolchain.bzl",
-    )
-    repository_ctx.symlink(
-        repository_ctx.path(Label("//:idl_toolchain.bzl")),
-        "idl_toolchain.bzl",
-    )
-    repository_ctx.symlink(
-        repository_ctx.path(Label("//:ewdk_command.bzl")),
-        "ewdk_command.bzl",
-    )
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
     arm_asm = repository_ctx.path(Label("//:arm_asm.bat.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
@@ -2098,6 +2089,27 @@ def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     Args:
         repository_ctx: 
     """
+
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:ewdk_cc_configure.bzl")),
+        "ewdk_cc_configure.bzl",
+    )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:resource_toolchain.bzl")),
+        "resource_toolchain.bzl",
+    )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:wpp_toolchain.bzl")),
+        "wpp_toolchain.bzl",
+    )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:idl_toolchain.bzl")),
+        "idl_toolchain.bzl",
+    )
+    repository_ctx.symlink(
+        repository_ctx.path(Label("//:ewdk_command.bzl")),
+        "ewdk_command.bzl",
+    )
     noewdk_path = repository_ctx.path(Label("//:BUILD.no_ewdk"))
 
     host_cpu = _get_cpu_value(repository_ctx)

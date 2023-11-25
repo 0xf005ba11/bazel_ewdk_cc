@@ -3,6 +3,12 @@
 
 # EWDKDIR envvar not set. Toolchains unavailable.
 
+load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config", "empty")
+load(":resource_toolchain.bzl", "resource_script_toolchain_config")
+load(":wpp_toolchain.bzl", "wpp_toolchain_config")
+load(":idl_toolchain.bzl", "idl_toolchain_config")
+load(":ewdk_command.bzl", "ewdk_command_config")
+
 constraint_setting(
     name = "ewdk_toolchain",
     visibility = ["//visibility:public"],
@@ -13,6 +19,8 @@ constraint_value(
     constraint_setting = ":ewdk_toolchain",
     visibility = ["//visibility:public"],
 )
+
+empty(name = "empty")
 
 toolchain_type(
     name = "resource_script_toolchain_type",
@@ -32,4 +40,52 @@ toolchain_type(
 toolchain_type(
     name = "ewdk_command_type",
     visibility = ["//visibility:public"],
+)
+
+# bazel 5.x requires toolchains to still be registered before target_compatible_with is checked.
+# cc toolchains don't have this issue.
+
+resource_script_toolchain_config(
+    name = "resource_script_toolchain",
+    rcpath = ":empty",
+)
+
+toolchain(
+    name = "resource-script-toolchain",
+    toolchain = ":resource_script_toolchain",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+wpp_toolchain_config(
+    name = "wpp_toolchain",
+    tracewpp_path = ":empty",
+    cfgdir = "",
+)
+
+toolchain(
+    name = "wpp-toolchain",
+    toolchain = ":wpp_toolchain",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+idl_toolchain_config(
+    name = "idl_toolchain",
+    midl_path = ":empty",
+)
+
+toolchain(
+    name = "idl-toolchain",
+    toolchain =":idl_toolchain",
+    toolchain_type = ":idl_toolchain_type",
+)
+
+ewdk_command_config(
+    name = "ewdk_command_toolchain",
+    command_path = ":empty",
+)
+
+toolchain(
+    name = "ewdk-command-toolchain",
+    toolchain = ":ewdk_command_toolchain",
+    toolchain_type = ":ewdk_command_type",
 )

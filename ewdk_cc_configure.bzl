@@ -288,6 +288,18 @@ def _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, sdk_versi
     }
     repository_ctx.template("c_cpp_properties.json", vscode_cfg_path, tpl_vars)
 
+def _build_cmd_env_helpers(repository_ctx, cmd_helper_path, build_envs):
+    for arch in ["x86", "x64", "arm", "arm64"]:
+        env = build_envs["app_" + arch]
+        tpl_vars = {
+            "%{path}": env["PATH"],
+            "%{include}": env["INCLUDE"],
+            "%{external_include}": env["EXTERNAL_INCLUDE"],
+            "%{libpath}": env["LIBPATH"],
+            "%{lib}": env["LIB"],
+        }
+        repository_ctx.template("env_app_%s.cmd" % arch, cmd_helper_path, tpl_vars)
+
 def _impl(ctx):
     wdm_default_includes = [x.replace("\\", "/") for x in ctx.attr.msvc_env_wdm["INCLUDE"].split(";") if x]
 
@@ -2023,6 +2035,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     tpl_path = repository_ctx.path(Label("//:BUILD.ewdk.toolchains.tpl"))
     arm_asm = repository_ctx.path(Label("//:arm_asm.bat.tpl"))
     vscode_cfg_path = repository_ctx.path(Label("//:c_cpp_properties.tpl"))
+    cmd_helper_path = repository_ctx.path(Label("//:cmd_helper.tpl"))
 
     # First, we need to get the envvars from executing the EWDK LaunchBuildEnv.cmd.
     # The user must have specified an EWDKDIR env var to the root of the EWDK location before executing bazel
@@ -2082,6 +2095,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     repository_ctx.file("ewdk_command.bat", content = "@echo off\r\n%*\r\n")
 
     _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env["VERSION_NUMBER"], binroot, build_envs)
+    _build_cmd_env_helpers(repository_ctx, cmd_helper_path, build_envs)
 
 def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     """Produce BUILD file containing toolchain() definitions for EWDK C++

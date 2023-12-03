@@ -3,6 +3,8 @@
 
 """ewdk_cc toolchains"""
 
+exports_files(glob(["*.cmd"]))
+
 load("@rules_cc//cc:defs.bzl", "cc_toolchain")
 load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config")
 load(":resource_toolchain.bzl", "resource_script_toolchain_config")

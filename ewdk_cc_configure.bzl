@@ -155,23 +155,33 @@ def _get_cpu_value(repository_ctx):
 def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
     """Retrieve the envvars set by the EWDK's LaunchBuildEnv.cmd"""
     plat = "amd64" if host_cpu == "x64_windows" else "x86_arm64"
-    cmd = "\"{}\\BuildEnv\\SetupBuildenv.cmd\" {}".format(ewdkdir, plat)
-    repository_ctx.file("ewdk_env.bat", "@echo off\r\ncall {} > nul \r\nset\r\n".format(cmd), True)
+    cmd = """@echo off
+call "{0}\\BuildEnv\\SetupBuildEnv.cmd" {1} > nul
+call "{0}\\BuildEnv\\SetupVSEnv.cmd" > nul
+set NETFXSDKDir=%NetFXKitsDir%
+cd /d "{0}"
+dir /b tlbexp.exe /s 2>nul
+set
+""".format(ewdkdir, plat)
+    repository_ctx.file("ewdk_env.bat", cmd, True)
     envs = execute(repository_ctx, ["./ewdk_env.bat"])
     env_map = {}
+    netfx_x86 = None
+    netfx_x64 = None
     for line in envs.split("\n"):
         line = line.strip()
         offset = line.find("=")
         if offset == -1:
+            if line.lower().endswith("\\x64\\tlbexp.exe"):
+                netfx_x64 = line[:-len("tlbexp.exe")]
+            elif line.lower().endswith("\\tlbexp.exe"):
+                netfx_x86 = line[:-len("tlbexp.exe")]
             continue
         env_map[line[:offset].upper()] = line[offset + 1:]
-    vsversion = env_map["VISUALSTUDIOVERSION"]
-    if vsversion == "17.0":
-        env_map["VCINSTALLDIR_170"] = env_map["VCINSTALLDIR"]
-    elif vsversion == "16.0":
-        env_map["VCINSTALLDIR_160"] = env_map["VCINSTALLDIR"]
-    elif vsversion == "15.0":
-        env_map["VCINSTALLDIR_150"] = env_map["VCINSTALLDIR"]
+    if netfx_x86:
+        env_map["WINDOWSSDK_EXECUTABLEPATH_X86"]=netfx_x86
+    if netfx_x64:
+        env_map["WINDOWSSDK_EXECUTABLEPATH_X64"]=netfx_x64
     env_str = ""
     for k, v in env_map.items():
         env_str += "    \"{}\": \"{}\",\r\n".format(k, v)
@@ -217,6 +227,15 @@ def _get_msbuild_envs(repository_ctx, env):
             for platform in platforms:
                 build_env = _msbuild_extract_vars(repository_ctx, env, project_type, platform)
                 build_envs["{}_{}".format(project_type, platform)] = build_env
+
+    # NetFx (.net framework)
+    for platform in ["x86", "x64"]:
+        penv = "app_{}".format(platform)
+        sdk = "WINDOWSSDK_EXECUTABLEPATH_{}".format(platform).upper()
+        build_envs[penv]["PATH"] = "{};{}".format(env[sdk], build_envs[penv]["PATH"])
+        build_envs[penv]["INCLUDE"] = "{}include\\um;{}".format(env["NETFXSDKDIR"], build_envs[penv]["INCLUDE"])
+        build_envs[penv]["LIB"] = "{}lib\\um;{}".format(env["NETFXSDKDIR"], build_envs[penv]["LIB"])
+
     return build_envs
 
 def _msbuild_extract_vars(repository_ctx, env, project_type, platform):

@@ -1588,6 +1588,31 @@ def _impl(ctx):
         ],
     )
 
+    link_arm64x_feature = feature(
+        name = "link_arm64x",
+        flag_sets = [
+            flag_set(
+                actions = all_link_actions +
+                          [ACTION_NAMES.cpp_link_static_library],
+                flag_groups = [flag_group(flags = ["/MACHINE:ARM64X"])],
+                with_features = [with_feature_set(not_features = ["wdm"])],
+            ),
+        ],
+    )
+
+    link_machine_feature = feature(
+        name = "link_machine",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = all_link_actions +
+                          [ACTION_NAMES.cpp_link_static_library],
+                flag_groups = [flag_group(flags = [ctx.attr.link_machine_flag])],
+                with_features = [with_feature_set(not_features = ["link_arm64x"])],
+            ),
+        ],
+    )
+
     archiver_flags_feature = feature(
         name = "archiver_flags",
         flag_sets = [
@@ -1597,9 +1622,6 @@ def _impl(ctx):
                     flag_group(
                         flags = ["/OUT:%{output_execpath}"],
                         expand_if_available = "output_execpath",
-                    ),
-                    flag_group(
-                        flags = [ctx.attr.link_machine_flag],
                     ),
                 ],
             ),
@@ -1629,7 +1651,6 @@ def _impl(ctx):
                 flag_groups = [
                     flag_group(
                         flags = [
-                            ctx.attr.link_machine_flag,
                             "/DYNAMICBASE",
                             "/NXCOMPAT",
                         ] + ctx.attr.arch_link_opts,
@@ -1642,7 +1663,6 @@ def _impl(ctx):
                 flag_groups = [
                     flag_group(
                         flags = [
-                            ctx.attr.link_machine_flag,
                             "/INTEGRITYCHECK",
                             "/DYNAMICBASE",
                             "/NXCOMPAT",
@@ -1969,6 +1989,8 @@ def _impl(ctx):
         default_compile_flags_feature,
         output_execpath_flags_feature,
         input_param_flags_feature,
+        link_arm64x_feature,
+        link_machine_feature,
         archiver_flags_feature,
         shared_flag_feature,
         default_link_flags_feature,

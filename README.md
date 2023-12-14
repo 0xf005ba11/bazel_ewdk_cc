@@ -10,6 +10,7 @@ Supports:
 * WPP tracing
 * IDL compiling (midl)
 * Cross-compiling to x86, x64, ARM and ARM64
+* Arm64EC and Arm64X
 * Supports building on x64 hosts only.
 * Intellisense configurations for use with the EWDK.
 
@@ -127,6 +128,27 @@ resource_script(
 
 # "your_rc" can now be referenced in deps of other binaries
 ```
+
+## Helper environment setup scripts
+
+Batch scripts are available that can be used to setup the environment for difficult cases that need some manual intervention. These are:
+* @ewdk_cc//:env_app_x86.cmd
+* @ewdk_cc//:env_app_x64.cmd
+* @ewdk_cc//:env_app_arm.cmd
+* @ewdk_cc//:env_app_arm64.cmd
+
+These will set the following environment variables that can then be used to update the relevant vars for your use case:
+* EWDK_PATH
+* EWDK_INCLUDE
+* EWDK_EXTERNAL_INCLUDE
+* EWDK_LIBPATH
+* EWDK_LIB
+
+## Arm64EC and Arm64X support
+
+Arm64ec can be implemented by using the `arm64ec` feature for compiling and `link_arm64ec` when linking. For cc_library/cc_binary, just provide both features when the `@platforms//cpu` value is `arm64`.
+
+Arm64X is more difficult as it requires finding a way to get bazel to produce both arm64 and arm64ec obj files for each source file while the `@platforms//cpu` config setting is `arm64`. The toolchain provides the `arm64ec` and `link_arm64x` features to allow using /arm64EC and /MACHINE:ARM64X. There is currently not an automatic way to deal with the obj files, but it is possible to write a macro that can compile the various obj files and then provide those to a final cc_binary/cc_library in the srcs argument.
 
 ## Windows vscode intellisense settings
 

@@ -175,6 +175,8 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * retpoline_check - /d2guardretpoline and /guard:retpoline (x64-only)
 * spectre - /Qspectre
 * spectre_load_cf - /Qspectre-load-cf
+* arm64ec - Pass /arm64EC to cl.exe or -machine ARM64EC to armasm64.exe when compiling for arm64.
+* link_arm64ec - Pass /MACHINE:ARM64EC to lib.exe/link.exe instead of the default /MACHINE: flag.
 * link_arm64x - Pass /MACHINE:ARM64X to lib.exe/link.exe instead of the default /MACHINE: flag.
 * default_includes_cmdline - Adds the default include paths to the command line (/I). This can be useful for tooling like producing intellisense configurations.
 

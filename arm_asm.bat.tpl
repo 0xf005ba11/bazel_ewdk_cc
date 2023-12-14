@@ -45,6 +45,7 @@ if "%arg%"=="/Ta" (
 )
 if /i "%arg%"=="/nologo" set arg=-nologo
 if /i "%arg%"=="/zh:sha_256" set arg=-gh:SHA256
+if /i "%arg%"=="/machine:arm64ec" set arg=-machine ARM64EC
 if "%arg:~0,1%"=="-" (
     set userargs=%userargs% %arg%
     goto next_arg

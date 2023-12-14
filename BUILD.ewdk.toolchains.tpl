@@ -300,6 +300,7 @@ ewdk_cc_toolchain_config(
     target_system_name = "local",
     tool_paths = _TOOL_PATHS_ARM64,
     toolchain_identifier = "ewdk_msvc_arm64",
+    arm64ec_asm_opt = ["/machine:ARM64EC"],
 )
 
 toolchain(

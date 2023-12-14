@@ -179,9 +179,9 @@ set
             continue
         env_map[line[:offset].upper()] = line[offset + 1:]
     if netfx_x86:
-        env_map["WINDOWSSDK_EXECUTABLEPATH_X86"]=netfx_x86
+        env_map["WINDOWSSDK_EXECUTABLEPATH_X86"] = netfx_x86
     if netfx_x64:
-        env_map["WINDOWSSDK_EXECUTABLEPATH_X64"]=netfx_x64
+        env_map["WINDOWSSDK_EXECUTABLEPATH_X64"] = netfx_x64
     env_str = ""
     for k, v in env_map.items():
         env_str += "    \"{}\": \"{}\",\r\n".format(k, v)
@@ -1437,6 +1437,34 @@ def _impl(ctx):
         ],
     )
 
+    arm64ec_feature = feature(
+        name = "arm64ec",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                    ACTION_NAMES.lto_backend,
+                    ACTION_NAMES.clif_match,
+                ],
+                flag_groups = [flag_group(flags = ["/arm64EC"])],
+                with_features = [with_feature_set(not_features = ["wdm"])],
+            ),
+            flag_set(
+                actions = [
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.assemble,
+                ],
+                flag_groups = [flag_group(flags = ["/nologo"] + ctx.attr.arm64ec_asm_opt)],
+                with_features = [with_feature_set(not_features = ["wdm"])],
+            ),
+        ],
+    )
+
     default_compile_flags_feature = feature(
         name = "default_compile_flags",
         enabled = True,
@@ -1986,6 +2014,7 @@ def _impl(ctx):
         compiler_input_flags_feature,
         compiler_output_flags_feature,
         default_includes_cmdline_feature,
+        arm64ec_feature,
         default_compile_flags_feature,
         output_execpath_flags_feature,
         input_param_flags_feature,
@@ -2061,6 +2090,7 @@ ewdk_cc_toolchain_config = rule(
         "arch_c_opts_wdm": attr.string_list(default = []),
         "arch_link_opts": attr.string_list(default = []),
         "arch_link_opts_wdm": attr.string_list(default = []),
+        "arm64ec_asm_opt": attr.string_list(default = []),
         "tool_paths": attr.string_dict(),
     },
 )

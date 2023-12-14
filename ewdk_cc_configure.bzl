@@ -1615,6 +1615,18 @@ def _impl(ctx):
             ),
         ],
     )
+    
+    link_arm64ec_feature = feature(
+        name = "link_arm64ec",
+        flag_sets = [
+            flag_set(
+                actions = all_link_actions +
+                          [ACTION_NAMES.cpp_link_static_library],
+                flag_groups = [flag_group(flags = ["/MACHINE:ARM64EC"])],
+                with_features = [with_feature_set(not_features = ["wdm"])],
+            ),
+        ],
+    )
 
     link_arm64x_feature = feature(
         name = "link_arm64x",
@@ -1636,7 +1648,7 @@ def _impl(ctx):
                 actions = all_link_actions +
                           [ACTION_NAMES.cpp_link_static_library],
                 flag_groups = [flag_group(flags = [ctx.attr.link_machine_flag])],
-                with_features = [with_feature_set(not_features = ["link_arm64x"])],
+                with_features = [with_feature_set(not_features = ["link_arm64ec", "link_arm64x"])],
             ),
         ],
     )
@@ -2018,6 +2030,7 @@ def _impl(ctx):
         default_compile_flags_feature,
         output_execpath_flags_feature,
         input_param_flags_feature,
+        link_arm64ec_feature,
         link_arm64x_feature,
         link_machine_feature,
         archiver_flags_feature,

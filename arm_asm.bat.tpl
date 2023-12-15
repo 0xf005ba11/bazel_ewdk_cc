@@ -7,6 +7,7 @@ set cl_incdirs=
 set state=
 set output=
 set input=
+set cl_arm64ec=
 
 shift
 :parse_args
@@ -45,7 +46,10 @@ if "%arg%"=="/Ta" (
 )
 if /i "%arg%"=="/nologo" set arg=-nologo
 if /i "%arg%"=="/zh:sha_256" set arg=-gh:SHA256
-if /i "%arg%"=="/machine:arm64ec" set arg=-machine ARM64EC
+if /i "%arg%"=="/machine:arm64ec" (
+    set arg=-machine ARM64EC
+    set cl_arm64ec=/D_ARM64EC_ /arm64EC
+)
 if "%arg:~0,1%"=="-" (
     set userargs=%userargs% %arg%
     goto next_arg
@@ -63,7 +67,7 @@ if not "%incdirs%"=="" (
     set incdirs=-i "%incdirs%"
 )
 
-"%{cl_path}" /nologo /c /P %cl_incdirs% /Fi"%output%.preprocessed.asm" /TC "%input%" && (
+"%{cl_path}" /nologo /c /P %cl_arm64ec% %cl_incdirs% /Fi"%output%.preprocessed.asm" /TC "%input%" && (
     "%{armasm_path}"%userargs% %incdirs% "%output%.preprocessed.asm" "%output%"
 ) || (
     exit 1

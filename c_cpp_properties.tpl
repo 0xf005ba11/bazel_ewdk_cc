@@ -166,7 +166,7 @@
                 "${workspaceFolder}/**",
                 %{system_includes}
             ],
-            "defines": ["_WIN64", "_AMD64_", "AMD64", "COMPILER_MSVC", "_M_AMD64", "_M_ARM64EC", "_DEBUG", "DBG=1", "MSC_NOOPT"],
+            "defines": ["_WIN64", "_AMD64_", "AMD64", "COMPILER_MSVC", "_M_AMD64", "_M_ARM64EC", "_ARM64EC_", "_DEBUG", "DBG=1", "MSC_NOOPT"],
             "windowsSdkVersion": "%{sdk_version}",
             "compilerPath": "%{cl_path}",
             "cStandard": "%{c_standard}",
@@ -186,7 +186,7 @@
                 "${workspaceFolder}/**",
                 %{system_includes}
             ],
-            "defines": ["_WIN64", "_AMD64_", "AMD64", "COMPILER_MSVC", "_M_AMD64", "_M_ARM64EC", "NDEBUG"],
+            "defines": ["_WIN64", "_AMD64_", "AMD64", "COMPILER_MSVC", "_M_AMD64", "_M_ARM64EC", "_ARM64EC_", "NDEBUG"],
             "windowsSdkVersion": "%{sdk_version}",
             "compilerPath": "%{cl_path}",
             "cStandard": "%{c_standard}",

@@ -146,9 +146,9 @@ These will set the following environment variables that can then be used to upda
 
 ## Arm64EC and Arm64X support
 
-Arm64ec can be implemented by using the `arm64ec` feature for compiling and `link_arm64ec` when linking. For cc_library/cc_binary, just provide both features when the `@platforms//cpu` value is `arm64`.
+Arm64ec can be implemented by using the `arm64ec` feature for compiling and `link_arm64ec` when linking. For cc_library/cc_binary, provide both features when the `@platforms//cpu` value is `arm64`.
 
-Arm64X is more difficult as it requires finding a way to get bazel to produce both arm64 and arm64ec obj files for each source file while the `@platforms//cpu` config setting is `arm64`. The toolchain provides the `arm64ec` and `link_arm64x` features to allow using /arm64EC and /MACHINE:ARM64X. There is currently not an automatic way to deal with the obj files, but it is possible to write a macro that can compile the various obj files and then provide those to a final cc_binary/cc_library in the srcs argument.
+Arm64X is more difficult as it requires finding a way to get bazel to produce both arm64 and arm64ec obj files for each source file while the `@platforms//cpu` config setting is `arm64`. The toolchain provides the `arm64ec` and `link_arm64x` features to allow using /arm64EC and /MACHINE:ARM64X. There is currently not an automatic way to deal with the object files, but it is possible to write a macro that can compile the various obj files and then provide those to a final cc_binary/cc_library in the srcs argument.
 
 ## Windows vscode intellisense settings
 

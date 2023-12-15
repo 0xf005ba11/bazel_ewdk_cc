@@ -159,6 +159,46 @@
                 ],
                 "limitSymbolsToIncludedHeaders": true
             }
+        },
+        {
+            "name": "win-ARM64EC-dbg",
+            "includePath": [
+                "${workspaceFolder}/**",
+                %{system_includes}
+            ],
+            "defines": ["_WIN64", "_AMD64_", "AMD64", "COMPILER_MSVC", "_M_AMD64", "_M_ARM64EC", "_DEBUG", "DBG=1", "MSC_NOOPT"],
+            "windowsSdkVersion": "%{sdk_version}",
+            "compilerPath": "%{cl_path}",
+            "cStandard": "%{c_standard}",
+            "cppStandard": "%{cpp_standard}",
+            "intelliSenseMode": "windows-msvc-x64",
+            "mergeConfigurations": true,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "win-ARM64EC-opt",
+            "includePath": [
+                "${workspaceFolder}/**",
+                %{system_includes}
+            ],
+            "defines": ["_WIN64", "_AMD64_", "AMD64", "COMPILER_MSVC", "_M_AMD64", "_M_ARM64EC", "NDEBUG"],
+            "windowsSdkVersion": "%{sdk_version}",
+            "compilerPath": "%{cl_path}",
+            "cStandard": "%{c_standard}",
+            "cppStandard": "%{cpp_standard}",
+            "intelliSenseMode": "windows-msvc-x64",
+            "mergeConfigurations": true,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4

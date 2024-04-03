@@ -42,6 +42,17 @@ load("@bazel_ewdk_cc//:ewdk_cc_configure.bzl", "register_ewdk_cc_toolchains")
 register_ewdk_cc_toolchains()
 ```
 
+Or, using the bzlmod system update your MODULE.bazel file with the following. The project is not yet
+published to the bzlmod repository, so you will need to use git_override and specify the a commit:
+```starlark
+bazel_dep(name = "ewdk_cc_toolchain")
+git_override(
+    module_name = "ewdk_cc_toolchain",
+    remote = "https://github.com/0xf005ba11/bazel_ewdk_cc.git",
+    commit = "INSERT_COMMIT_HERE",
+)
+```
+
 Add the following to your .bazelrc (this should hopefully no longer be needed once this [issue](https://github.com/bazelbuild/bazel/issues/7260) is closed in bazel 7.0.0):
 ```
 build --incompatible_enable_cc_toolchain_resolution

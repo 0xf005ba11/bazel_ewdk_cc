@@ -195,9 +195,24 @@ ewdk_cc_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-cc-toolchain-x64_windows",
+    name = "ewdk-cc-toolchain-x64_x64_windows",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk-cc-compiler-x64_windows",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-cc-toolchain-arm64_x64_windows",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -247,9 +262,24 @@ ewdk_cc_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-cc-toolchain-x86_windows",
+    name = "ewdk-cc-toolchain-x64_x86_windows",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//cpu:x86_32",
+        "@platforms//os:windows",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk-cc-compiler-x86_windows",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-cc-toolchain-arm64_x86_windows",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -304,9 +334,24 @@ ewdk_cc_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-cc-toolchain-arm64_windows",
+    name = "ewdk-cc-toolchain-x64_arm64_windows",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:windows",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk-cc-compiler-arm64_windows",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-cc-toolchain-arm64_arm64_windows",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -359,9 +404,24 @@ ewdk_cc_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-cc-toolchain-arm_windows",
+    name = "ewdk-cc-toolchain-x64_arm_windows",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//cpu:arm",
+        "@platforms//os:windows",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk-cc-compiler-arm_windows",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-cc-toolchain-arm64_arm_windows",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -391,9 +451,24 @@ resource_script_toolchain_config(
 )
 
 toolchain(
-    name = "resource-script-windows-x86",
+    name = "resource-script-windows-x64_x86",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_32",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_x86",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+toolchain(
+    name = "resource-script-windows-arm64_x86",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -419,9 +494,24 @@ resource_script_toolchain_config(
 )
 
 toolchain(
-    name = "resource-script-windows-x64",
+    name = "resource-script-windows-x64_x64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_x64",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+toolchain(
+    name = "resource-script-windows-arm64_x64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -446,9 +536,24 @@ resource_script_toolchain_config(
 )
 
 toolchain(
-    name = "resource-script-windows-arm",
+    name = "resource-script-windows-x64_arm",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_arm",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+toolchain(
+    name = "resource-script-windows-arm64_arm",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -474,9 +579,24 @@ resource_script_toolchain_config(
 )
 
 toolchain(
-    name = "resource-script-windows-arm64",
+    name = "resource-script-windows-x64_arm64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_resource_script_toolchain_arm64",
+    toolchain_type = ":resource_script_toolchain_type",
+)
+
+toolchain(
+    name = "resource-script-windows-arm64_arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -503,9 +623,24 @@ wpp_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-wpp-toolchain-x86",
+    name = "ewdk-wpp-toolchain-x64_x86",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_32",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_x86",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-arm64_x86",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -526,9 +661,24 @@ wpp_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-wpp-toolchain-x64",
+    name = "ewdk-wpp-toolchain-x64_x64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_x64",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-arm64_x64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -549,9 +699,24 @@ wpp_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-wpp-toolchain-arm",
+    name = "ewdk-wpp-toolchain-x64_arm",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_arm",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-arm64_arm",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -572,9 +737,24 @@ wpp_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-wpp-toolchain-arm64",
+    name = "ewdk-wpp-toolchain-x64_arm64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_wpp_toolchain_arm64",
+    toolchain_type = ":wpp_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-wpp-toolchain-arm64_arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -607,9 +787,24 @@ idl_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-idl-toolchain-x86",
+    name = "ewdk-idl-toolchain-x64_x86",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_32",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_idl_toolchain_x86",
+    toolchain_type = ":idl_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-idl-toolchain-arm64_x86",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -636,9 +831,24 @@ idl_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-idl-toolchain-x64",
+    name = "ewdk-idl-toolchain-x64_x64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_idl_toolchain_x64",
+    toolchain_type = ":idl_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-idl-toolchain-arm64_x64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -665,9 +875,24 @@ idl_toolchain_config(
 )
 
 toolchain(
-    name = "ewdk-idl-toolchain-arm64",
+    name = "ewdk-idl-toolchain-x64_arm64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_idl_toolchain_arm64",
+    toolchain_type = ":idl_toolchain_type",
+)
+
+toolchain(
+    name = "ewdk-idl-toolchain-arm64_arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [
@@ -692,9 +917,23 @@ ewdk_command_config(
 )
 
 toolchain(
-    name = "ewdk-command-toolchain",
+    name = "ewdk-command-toolchain-x64",
     exec_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+        ":ewdk_cc",
+    ],
+    toolchain = ":ewdk_command_toolchain",
+    toolchain_type = "ewdk_command_type",
+)
+
+toolchain(
+    name = "ewdk-command-toolchain-arm64",
+    exec_compatible_with = [
+        "@platforms//cpu:aarch64",
         "@platforms//os:windows",
     ],
     target_compatible_with = [

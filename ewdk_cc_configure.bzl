@@ -145,16 +145,45 @@ def _get_cpu_value(repository_ctx):
     if os_name.find("windows") != -1:
         arch = _get_envvar(repository_ctx.os.environ, "PROCESSOR_ARCHITECTURE", "").lower()
         if arch == "amd64":
+            # check if we're running under emulation
+            processor_id = _get_envvar(repository_ctx.os.environ, "PROCESSOR_IDENTIFIER", "").lower()
+            if processor_id.find("armv8 (64-bit)") != -1:
+                return "arm64_windows"
             return "x64_windows"
-
-        #elif arch == "arm64":
-        #    return "arm64_windows"
+        elif arch == "arm64":
+            return "arm64_windows"
+        elif arch == "x86":
+            return "x86_windows"
 
     return "unknown"
 
 def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
     """Retrieve the envvars set by the EWDK's LaunchBuildEnv.cmd"""
-    plat = "amd64" if host_cpu == "x64_windows" else "x86_arm64"
+    # N.B. The selection of the SetupBuildEnv.cmd argument is not all that important here. Locating
+    # the available build tools will select all the right parts regardless. What is important here
+    # is that the host architecture is passed since that dictates what "native" compiler is used.
+    # Microsoft does not yet deliver a native ARM64 host compiler, so we have to use the x64 one
+    # under emulation.
+    #
+    # Note for the future, unfortunately the EWDK does not expose the ability to specify amd64_arm64
+    # or amd64_x86. You can hack around this by setting:
+    # set "__VSCMD_ARG_HOST_ARCH=amd64"
+    # set "__VSCMD_ARG_TGT_ARCH=%2"
+    # After calling SetupBuildEnv.cmd you then need to fix up the following:
+    # if /i "%2" == "x86" (
+    #     set Platform=x86
+    #     set "WindowsSdkVerBinPath=%WindowsSdkDir%\bin\%Version_Number%\x64"
+    # ) else if /i "%2" == "amd64" (
+    #     set Platform=x64
+    #     set "WindowsSdkVerBinPath=%WindowsSdkDir%\bin\%Version_Number%\x64"
+    # ) else if /i "%2" == "arm64" (
+    #     set Platform=ARM64
+    #     set "WindowsSdkVerBinPath=%WindowsSdkDir%\bin\%Version_Number%\x64"
+    # ) else (
+    #     echo Unknown target architecture %2
+    #     goto error
+    # )
+    plat = "amd64" if host_cpu in ["x64_windows", "arm64_windows"] else "x86"
     cmd = """@echo off
 call "{0}\\BuildEnv\\SetupBuildEnv.cmd" {1} > nul
 call "{0}\\BuildEnv\\SetupVSEnv.cmd" > nul
@@ -202,7 +231,10 @@ def _get_exe_path(repository_ctx, filename, env):
 
 def _get_msbuild_envs(repository_ctx, env):
     """Retrieve env vars set by msbuild used as defaults for the various project types supported here"""
-    fast_safe = ["ni_release_svc_prod1.22621.382"]
+    fast_safe = [
+        "ni_release_svc_prod1.22621.382",
+        "ni_release_svc_prod1.22621.2428",
+    ]
     ewdk_version = env.get("BUILDLAB")
 
     build_envs = {}
@@ -1615,7 +1647,7 @@ def _impl(ctx):
             ),
         ],
     )
-    
+
     link_arm64ec_feature = feature(
         name = "link_arm64ec",
         flag_sets = [
@@ -2110,9 +2142,9 @@ ewdk_cc_toolchain_config = rule(
 
 def _configure_ewdk_cc(repository_ctx, host_cpu):
     """Produce toolchain BUILD file from template.
-    
+
     Args:
-        repository_ctx: 
+        repository_ctx:
         host_cpu: Build execution cpu (e.g. x64_windows)
     """
 
@@ -2183,9 +2215,9 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
 
 def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     """Produce BUILD file containing toolchain() definitions for EWDK C++
-    
+
     Args:
-        repository_ctx: 
+        repository_ctx:
     """
 
     repository_ctx.symlink(
@@ -2211,7 +2243,7 @@ def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
     noewdk_path = repository_ctx.path(Label("//:BUILD.no_ewdk"))
 
     host_cpu = _get_cpu_value(repository_ctx)
-    if host_cpu != "x64_windows":
+    if host_cpu not in ["x64_windows", "arm64_windows"]:
         repository_ctx.template("BUILD", noewdk_path, {})
 
     ewdkdir = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR")

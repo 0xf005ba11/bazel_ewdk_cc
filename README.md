@@ -11,7 +11,7 @@ Supports:
 * IDL compiling (midl)
 * Cross-compiling to x86, x64, ARM and ARM64
 * Arm64EC and Arm64X
-* Supports building on x64 hosts only.
+* Supports building on x64 and ARM64 hosts.
 * Intellisense configurations for use with the EWDK.
 
 Supported bazel versions:

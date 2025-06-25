@@ -1171,7 +1171,6 @@ def _impl(ctx):
                 with_features = [with_feature_set(not_features = ["c17"])],
             ),
         ],
-        provides = ["c_standard"],
     )
 
     c17_feature = feature(
@@ -1189,7 +1188,6 @@ def _impl(ctx):
                 flag_groups = [flag_group(flags = ["/std:c17"])],
             ),
         ],
-        provides = ["c_standard"],
     )
 
     cpp14_feature = feature(
@@ -1208,7 +1206,6 @@ def _impl(ctx):
                 with_features = [with_feature_set(not_features = ["cpp20","cpp17"])],
             ),
         ],
-        provides = ["cpp_standard"],
     )
 
     cpp17_feature = feature(
@@ -1227,7 +1224,6 @@ def _impl(ctx):
                 with_features = [with_feature_set(not_features = ["cpp20"])],
             ),
         ],
-        provides = ["cpp_standard"],
     )
 
     cpp20_feature = feature(
@@ -1245,7 +1241,6 @@ def _impl(ctx):
                 flag_groups = [flag_group(flags = ["/std:c++20"])],
             ),
         ],
-        provides = ["cpp_standard"],
     )
 
     buffer_security_checks_feature = feature(

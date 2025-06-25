@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: MIT
 
 module(
-    name = "ewdk_cc_toolchain",
-    version = "1.0.11",
+    name = "ewdk_cc_toolchains",
+    version = "1.0.12",
     compatibility_level = 1,
 )
 
-bazel_dep(name = "rules_cc", version = "0.0.9")
-bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "rules_cc", version = "0.1.1")
+bazel_dep(name = "platforms", version = "0.0.11")
 
 toolchains = use_extension("//:ewdk_extension.bzl", "toolchains")
-use_repo(toolchains, "ewdk_toolchains")
-register_toolchains("@ewdk_toolchains//:all")
+use_repo(toolchains, ewdk_cc = "ewdk_toolchains")
+register_toolchains("@ewdk_cc//:all")

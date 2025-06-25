@@ -3,7 +3,6 @@
 
 """EWDK toolchain implementation"""
 
-load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "execute")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
     "action_config",
@@ -161,7 +160,7 @@ def _get_ewdk_version(repository_ctx, ewdkdir):
     """ Retrieves the EWDK version"""
     cmd = "@echo off\r\ntype \"{0}\\Version.txt\"\r\n".format(ewdkdir)
     repository_ctx.file("ewdk_get_version.bat", cmd, True)
-    output = execute(repository_ctx, ["./ewdk_get_version.bat"])
+    output = repository_ctx.execute(["./ewdk_get_version.bat"])
     if output.startswith("Version "):
         output = output[len("Version "):]
     numbers = [int(o) for o in output.split('.') if o.isdigit()]
@@ -261,7 +260,7 @@ dir /b tlbexp.exe /s 2>nul
 set
 """.format(ewdkdir, host_arch, tgt_arch, platform_arch, bin_arch)
     repository_ctx.file("ewdk_env.bat", cmd, True)
-    envs = execute(repository_ctx, ["./ewdk_env.bat"])
+    envs = repository_ctx.execute(["./ewdk_env.bat"])
     env_map = {}
     netfx_x86 = None
     netfx_x64 = None
@@ -294,7 +293,7 @@ set
 def _get_exe_path(repository_ctx, filename, env):
     """Retrieve the path to the given exe"""
     repository_ctx.file("ewdk_get_exe.bat", "@echo off\r\nwhere %1\r\n", True)
-    output = execute(repository_ctx, ["./ewdk_get_exe.bat", filename], environment = env)
+    output = repository_ctx.execute(["./ewdk_get_exe.bat", filename], environment = env)
     for line in output.split("\n"):
         if len(line):
             return line.strip()

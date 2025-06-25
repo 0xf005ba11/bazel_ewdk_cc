@@ -15,7 +15,7 @@ Supports:
 * Intellisense configurations for use with the EWDK.
 
 Supported bazel versions:
-* 5.1.0 - 6.2.0 - Built and tested with. Unknown if other versions work.
+* 5.1.0 - 8.3.0 - Built and tested with. Unknown if other versions work.
 
 ## Quick Start
 
@@ -31,13 +31,13 @@ Include the following in your WORKSPACE:
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
-    name = "bazel_ewdk_cc",
+    name = "ewdk_cc_toolchains",
     sha256 = "fdc6ca9a8610f28744cf37af132a03422599f580757b6e54478e007e7505bac9",
     strip_prefix = "bazel_ewdk_cc-1.0.3/",
     url = "https://github.com/0xf005ba11/bazel_ewdk_cc/archive/refs/tags/v1.0.3.zip",
 )
 
-load("@bazel_ewdk_cc//:ewdk_cc_configure.bzl", "register_ewdk_cc_toolchains")
+load("@ewdk_cc_toolchains//:ewdk_cc_configure.bzl", "register_ewdk_cc_toolchains")
 
 register_ewdk_cc_toolchains()
 ```
@@ -45,9 +45,9 @@ register_ewdk_cc_toolchains()
 Or, using the bzlmod system update your MODULE.bazel file with the following. The project is not yet
 published to the bzlmod repository, so you will need to use git_override and specify the a commit:
 ```starlark
-bazel_dep(name = "ewdk_cc_toolchain")
+bazel_dep(name = "ewdk_cc_toolchains")
 git_override(
-    module_name = "ewdk_cc_toolchain",
+    module_name = "ewdk_cc_toolchains",
     remote = "https://github.com/0xf005ba11/bazel_ewdk_cc.git",
     commit = "INSERT_COMMIT_HERE",
 )
@@ -96,7 +96,7 @@ This will result in a ```sys.dll``` being built. Bazel doesn't currently underst
 
 The following is an example that can copy the result ```sys.dll``` to ```sys.sys``` and sign the driver with a WDK-produced certificate. Here ```ewdk_command``` is similar to ```genrule```, but has the EWDK environment available.
 ```starlark
-load("@bazel_ewdk_cc//:ewdk_command.bzl", "ewdk_command")
+load("@ewdk_cc_toolchains//:ewdk_command.bzl", "ewdk_command")
 
 ewdk_command(
     name = "sys",
@@ -129,7 +129,7 @@ cc_binary(
 ## Building a resource script
 
 ```starlark
-load("@bazel_ewdk_cc//:resource_toolchain.bzl", "resource_script")
+load("@ewdk_cc_toolchains//:resource_toolchain.bzl", "resource_script")
 
 resource_script(
     name = "your_rc",

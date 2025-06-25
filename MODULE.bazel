@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 module(
-    name = "ewdk_cc",
+    name = "ewdk_cc_toolchains",
     version = "1.0.12",
     compatibility_level = 1,
 )

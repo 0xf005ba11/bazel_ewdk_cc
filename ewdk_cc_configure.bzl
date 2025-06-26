@@ -307,7 +307,7 @@ def _get_msbuild_envs(repository_ctx, env):
 
     # Unknown if it is safe to use the string replace method on this version. Execute msbuild for all combos
     i = 0
-    tot = len(project_type) * len(platforms)
+    tot = len(project_types) * len(platforms)
     for project_type in project_types:
         for platform in platforms:
             i = i + 1

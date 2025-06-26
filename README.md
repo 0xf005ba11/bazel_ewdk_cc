@@ -51,6 +51,11 @@ git_override(
     remote = "https://github.com/0xf005ba11/bazel_ewdk_cc.git",
     commit = "INSERT_COMMIT_HERE",
 )
+
+# You may need to register the toolchains as follows
+ewdk_toolchains = use_extension("@ewdk_cc_toolchains//:ewdk_extension.bzl", "toolchains")
+use_repo(ewdk_toolchains, ewdk_cc = "ewdk_toolchains")
+register_toolchains("@ewdk_cc//:all")
 ```
 
 Add the following to your .bazelrc (this should hopefully no longer be needed once this [issue](https://github.com/bazelbuild/bazel/issues/7260) is closed in bazel 7.0.0):

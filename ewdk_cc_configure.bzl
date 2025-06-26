@@ -301,35 +301,17 @@ def _get_exe_path(repository_ctx, filename, env):
 
 def _get_msbuild_envs(repository_ctx, env):
     """Retrieve env vars set by msbuild used as defaults for the various project types supported here"""
-    fast_safe = [
-        "ni_release_svc_prod1.22621.382",
-        "ni_release_svc_prod1.22621.2428",
-        "ge_release.26100.1", # native ARM64 support starts here
-    ]
-    ewdk_version = env.get("BUILDLAB")
-
     build_envs = {}
     platforms = ["x86", "x64", "arm", "arm64"]
     project_types = _project_types.keys()
-    if ewdk_version in fast_safe:
-        # Only execute msbuild once per project_type and then use string replace to fill in other platforms
-        for project_type in project_types:
-            build_env = _msbuild_extract_vars(repository_ctx, env, project_type, platforms[0])
-            build_envs["{}_{}".format(project_type, platforms[0])] = build_env
-        for project_type in project_types:
-            for platform in platforms:
-                org_env = build_envs["{}_{}".format(project_type, platforms[0])]
-                if platform != platforms[0]:
-                    name = "{}_{}".format(project_type, platform)
-                    build_envs[name] = _msbuild_replace_vars(repository_ctx, org_env, platforms[0], platform)
-    else:
-        # Unknown if it is safe to use the string replace method on this version. Execute msbuild for all combos
-        asdf = print  # Avoid "problem" report from vscode bazel extension
-        asdf("Warning: Unknown EWDK version. Using slow method to acquire env vars")
-        for project_type in project_types:
-            for platform in platforms:
-                build_env = _msbuild_extract_vars(repository_ctx, env, project_type, platform)
-                build_envs["{}_{}".format(project_type, platform)] = build_env
+
+    # Unknown if it is safe to use the string replace method on this version. Execute msbuild for all combos
+    asdf = print  # Avoid "problem" report from vscode bazel extension
+    asdf("Retrieving msbuild env vars...")
+    for project_type in project_types:
+        for platform in platforms:
+            build_env = _msbuild_extract_vars(repository_ctx, env, project_type, platform)
+            build_envs["{}_{}".format(project_type, platform)] = build_env
 
     # NetFx (.net framework)
     for platform in ["x86", "x64"]:
@@ -363,28 +345,6 @@ def _msbuild_extract_vars(repository_ctx, env, project_type, platform):
             offset = line.find("=")
             tmp[line[:offset]] = line[offset + 1:]
     return tmp
-
-def _msbuild_replace_vars(repository_ctx, build_env, old_platform, new_platform):
-    """Create a new build_env by replacing the platfrom value (e.g. x86 -> arm)"""
-    to_replace = ["INCLUDE", "EXTERNAL_INCLUDE", "LIB", "LIBPATH"]
-    keys = build_env.keys()
-    tmp = {}
-    for k in keys:
-        if k in to_replace:
-            tmp[k] = _msbuild_remove_nonexisting(repository_ctx, build_env[k].replace(old_platform, new_platform))
-        else:
-            tmp[k] = build_env[k]
-    return tmp
-
-def _msbuild_remove_nonexisting(repository_ctx, value):
-    """Remove non-existing paths from the env var value"""
-    dirs = value.split(";")
-    for i in range(len(dirs)):
-        if len(dirs[i]):
-            ospath = repository_ctx.path(dirs[i])
-            if not ospath.exists:
-                dirs[i] = ""
-    return ";".join([x for x in dirs if len(x)])
 
 def _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env, build_envs):
     host = env["PLATFORM"].lower()

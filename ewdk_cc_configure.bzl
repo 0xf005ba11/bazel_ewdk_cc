@@ -306,10 +306,13 @@ def _get_msbuild_envs(repository_ctx, env):
     project_types = _project_types.keys()
 
     # Unknown if it is safe to use the string replace method on this version. Execute msbuild for all combos
-    asdf = print  # Avoid "problem" report from vscode bazel extension
-    asdf("Retrieving msbuild env vars...")
+    i = 0
+    tot = len(project_type) * len(platforms)
     for project_type in project_types:
         for platform in platforms:
+            i = i + 1
+            progress = "Acquiring msbuild \"{} {}\" env vars... [{}/{}]".format(platform, project_type, i, tot)
+            repository_ctx.report_progress(progress)
             build_env = _msbuild_extract_vars(repository_ctx, env, project_type, platform)
             build_envs["{}_{}".format(project_type, platform)] = build_env
 

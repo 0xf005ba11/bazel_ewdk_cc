@@ -346,28 +346,6 @@ def _msbuild_extract_vars(repository_ctx, env, project_type, platform):
             tmp[line[:offset]] = line[offset + 1:]
     return tmp
 
-def _msbuild_replace_vars(repository_ctx, build_env, old_platform, new_platform):
-    """Create a new build_env by replacing the platfrom value (e.g. x86 -> arm)"""
-    to_replace = ["INCLUDE", "EXTERNAL_INCLUDE", "LIB", "LIBPATH"]
-    keys = build_env.keys()
-    tmp = {}
-    for k in keys:
-        if k in to_replace:
-            tmp[k] = _msbuild_remove_nonexisting(repository_ctx, build_env[k].replace(old_platform, new_platform))
-        else:
-            tmp[k] = build_env[k]
-    return tmp
-
-def _msbuild_remove_nonexisting(repository_ctx, value):
-    """Remove non-existing paths from the env var value"""
-    dirs = value.split(";")
-    for i in range(len(dirs)):
-        if len(dirs[i]):
-            ospath = repository_ctx.path(dirs[i])
-            if not ospath.exists:
-                dirs[i] = ""
-    return ";".join([x for x in dirs if len(x)])
-
 def _build_vscode_intellisense_config(repository_ctx, vscode_cfg_path, env, build_envs):
     host = env["PLATFORM"].lower()
     app_includes = build_envs["app_" + host]["INCLUDE"]

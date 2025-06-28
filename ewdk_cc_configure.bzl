@@ -2068,7 +2068,7 @@ def _impl(ctx):
     )
 
     cpp_latest_feature = feature(
-        name = "cpp_lastest",
+        name = "cpp_latest",
         flag_sets = [
             flag_set(
                 actions = [

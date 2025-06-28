@@ -255,6 +255,13 @@ cd /d "{0}"
 dir /b tlbexp.exe /s 2>nul
 
 ::
+:: Fixup VCINSTALLDIR_<ver> not being set
+::
+set "VisualStudioMajorVersion=%VisualStudioVersion:~0,2%"
+set "VCINSTALLDIR_%VisualStudioMajorVersion%0=%VCINSTALLDIR%"
+set VisualStudioMajorVersion=
+
+::
 :: Dump the environment variables
 ::
 set

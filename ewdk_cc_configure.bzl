@@ -929,22 +929,22 @@ def _impl(ctx):
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MT"])],
-                with_features = [with_feature_set(not_features = ["dbg"])],
+                with_features = [with_feature_set(not_features = ["dbg", "disable_msvcrt"])],
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MTd"])],
-                with_features = [with_feature_set(features = ["dbg"])],
+                with_features = [with_feature_set(features = ["dbg"], not_features = ["disable_mscvrt"])],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmt.lib"])],
-                with_features = [with_feature_set(not_features = ["dbg"])],
+                with_features = [with_feature_set(not_features = ["dbg", "disable_msvcrt"])],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmtd.lib"])],
-                with_features = [with_feature_set(features = ["dbg"])],
+                with_features = [with_feature_set(features = ["dbg"], not_features = ["disable_mscvrt"])],
             ),
         ],
     )
@@ -956,22 +956,22 @@ def _impl(ctx):
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MD"])],
-                with_features = [with_feature_set(not_features = ["dbg", "static_link_msvcrt"])],
+                with_features = [with_feature_set(not_features = ["dbg", "static_link_msvcrt", "disable_msvcrt"])],
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MDd"])],
-                with_features = [with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt"])],
+                with_features = [with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt", "disable_msvcrt"])],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrt.lib"])],
-                with_features = [with_feature_set(not_features = ["dbg", "static_link_msvcrt"])],
+                with_features = [with_feature_set(not_features = ["dbg", "static_link_msvcrt", "disable_msvcrt"])],
             ),
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrtd.lib"])],
-                with_features = [with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt"])],
+                with_features = [with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt", "disable_msvcrt"])],
             ),
         ],
     )
@@ -1646,6 +1646,8 @@ def _impl(ctx):
     #
     # Features unique to this toolchain
     #
+
+    disable_msvcrt_feature = feature(name = "disable_msvcrt")
 
     wdm_feature = feature(
         name = "wdm",
@@ -2326,6 +2328,7 @@ def _impl(ctx):
         symbol_check_feature,
 
         # features from this toolchain
+        disable_msvcrt_feature,
         wdm_feature,
         wdm_entry_feature,
         no_runtime_checks_feature,

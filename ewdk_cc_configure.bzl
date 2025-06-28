@@ -756,7 +756,8 @@ def _impl(ctx):
 
     compiler_param_file_feature = feature(
         name = "compiler_param_file",
-        enabled = True,
+        # compiler param files are currently broken: https://github.com/bazelbuild/bazel/issues/21029
+        # enabled = True,
     )
 
     copy_dynamic_libraries_to_binary_feature = feature(

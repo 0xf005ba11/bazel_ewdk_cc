@@ -2021,7 +2021,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp20_module_codegen,
                 ],
                 flag_groups = [flag_group(flags = ["/std:c++14"])],
-                with_features = [with_feature_set(not_features = ["cpp20","cpp17"])],
+                with_features = [with_feature_set(not_features = ["cpp_latest","cpp20","cpp17"])],
             ),
         ],
     )
@@ -2042,7 +2042,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp20_module_codegen,
                 ],
                 flag_groups = [flag_group(flags = ["/std:c++17"])],
-                with_features = [with_feature_set(not_features = ["cpp20"])],
+                with_features = [with_feature_set(not_features = ["cpp_latest","cpp20"])],
             ),
         ],
     )
@@ -2063,6 +2063,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp20_module_codegen,
                 ],
                 flag_groups = [flag_group(flags = ["/std:c++20"])],
+                with_features = [with_feature_set(not_features = ["cpp_latest"])],
             ),
         ],
     )

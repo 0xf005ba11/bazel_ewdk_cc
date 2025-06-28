@@ -116,6 +116,8 @@ _TOOL_PATHS_X86 = {
     "objcopy": "wrapper/bin/msvc_nop.bat",
     "objdump": "wrapper/bin/msvc_nop.bat",
     "strip": "wrapper/bin/msvc_nop.bat",
+    "dumpbin": "%{msvc_dumpbin_path_x86}",
+    "cpp-module-deps-scanner": "deps_scanner_x86.bat",
 }
 
 _TOOL_PATHS_X64 = {
@@ -129,6 +131,8 @@ _TOOL_PATHS_X64 = {
     "objcopy": "wrapper/bin/msvc_nop.bat",
     "objdump": "wrapper/bin/msvc_nop.bat",
     "strip": "wrapper/bin/msvc_nop.bat",
+    "dumpbin": "%{msvc_dumpbin_path_x64}",
+    "cpp-module-deps-scanner": "deps_scanner_x64.bat",
 }
 
 _TOOL_PATHS_ARM = {
@@ -142,6 +146,8 @@ _TOOL_PATHS_ARM = {
     "objcopy": "wrapper/bin/msvc_nop.bat",
     "objdump": "wrapper/bin/msvc_nop.bat",
     "strip": "wrapper/bin/msvc_nop.bat",
+    "dumpbin": "%{msvc_dumpbin_path_arm}",
+    "cpp-module-deps-scanner": "deps_scanner_arm.bat",
 }
 
 _TOOL_PATHS_ARM64 = {
@@ -155,6 +161,8 @@ _TOOL_PATHS_ARM64 = {
     "objcopy": "wrapper/bin/msvc_nop.bat",
     "objdump": "wrapper/bin/msvc_nop.bat",
     "strip": "wrapper/bin/msvc_nop.bat",
+    "dumpbin": "%{msvc_dumpbin_path_arm64}",
+    "cpp-module-deps-scanner": "deps_scanner_arm64.bat",
 }
 
 # x64 toolchain

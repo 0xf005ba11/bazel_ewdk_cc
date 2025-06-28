@@ -200,6 +200,7 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * cpp14 - /std:c++14
 * cpp17 - /std:c++17
 * cpp20 - /std:c++20
+* cpp_latest - /std:c++latest
 * disable_msvcrt - Bazel forces msvcrt linkage. This can be used to disable the usage. Default for `wdm`.
 * msvc_enable_minmax - Enable the windows SDK min and max macros (they are disabled by default with /DNOMINMAX)
 * no_default_cpp_unwinding - Disable the /EHsc option which is enabled by default on non-`wdm` builds

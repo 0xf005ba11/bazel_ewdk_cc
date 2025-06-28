@@ -645,6 +645,13 @@ def _impl(ctx):
                 actions = all_link_actions +
                           [ACTION_NAMES.cpp_link_static_library],
                 env_entries = [env_entry(key = "LIB", value = ctx.attr.msvc_env_app["LIB"])],
+                with_features = [with_feature_set(not_features = ["wdm"])],
+            ),
+            env_set(
+                actions = all_link_actions +
+                          [ACTION_NAMES.cpp_link_static_library],
+                env_entries = [env_entry(key = "LIB", value = ctx.attr.msvc_env_wdm["LIB"])],
+                with_features = [with_feature_set(features = ["wdm"])],
             ),
         ],
     )
@@ -1123,6 +1130,27 @@ def _impl(ctx):
                     env_entry(key = "INCLUDE", value = ctx.attr.msvc_env_app["INCLUDE"]),
                     env_entry(key = "EXTERNAL_INCLUDE", value = ctx.attr.msvc_env_app["EXTERNAL_INCLUDE"]),
                 ],
+                with_features = [with_feature_set(not_features = ["wdm"])],
+            ),
+            env_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_deps_scanning,
+                    ACTION_NAMES.cpp20_module_compile,
+                    ACTION_NAMES.cpp20_module_codegen,
+                    ACTION_NAMES.assemble,
+                    ACTION_NAMES.preprocess_assemble,
+                ],
+                env_entries = [
+                    env_entry(key = "INCLUDE", value = ctx.attr.msvc_env_wdm["INCLUDE"]),
+                    env_entry(key = "EXTERNAL_INCLUDE", value = ctx.attr.msvc_env_wdm["EXTERNAL_INCLUDE"]),
+                ],
+                with_features = [with_feature_set(features = ["wdm"])],
             ),
         ],
     )

@@ -15,7 +15,7 @@ Supports:
 * Intellisense configurations for use with the EWDK.
 
 Supported bazel versions:
-* 5.1.0 - 8.3.0 - Built and tested with. Unknown if other versions work.
+* 6.4.0 - 8.3.0 - Built and tested with. Unknown if other versions work. (1.0.11 and prior support back to 5.1.0)
 
 ## Quick Start
 
@@ -115,7 +115,7 @@ ewdk_command(
 
 Make sure to include one of ```subsystem_console``` or ```subsystem_windows```. Use ```subsystem_windows``` for DLLs.
 
-If you are using the MS C-Runtime, also include one of ```static_link_msvcrt``` or ```dynamic_link_msvcrt```. These features will automatically choose debug versions when building in ```dbg``` or ```fastbuild``` modes. To always specify a non-debug version, use one of ```static_link_msvcrt_no_debug``` or ```dynamic_link_msvcrt_no_debug```. This may be required when external depedencies always link against a non-debug version.
+If you are using the MS C-Runtime, also include one of ```static_link_msvcrt``` or ```dynamic_link_msvcrt```. These features will automatically choose debug versions when building in ```dbg``` mode.
 
 ```starlark
 cc_binary(
@@ -200,7 +200,8 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * cpp14 - /std:c++14
 * cpp17 - /std:c++17
 * cpp20 - /std:c++20
-* disable_msvcrt - Bazel 5.x forces msvcrt linkage. This can be used to disable the usage. Default for `wdm`.
+* cpp_latest - /std:c++latest
+* disable_msvcrt - Bazel forces msvcrt linkage. This can be used to disable the usage. Default for `wdm`.
 * msvc_enable_minmax - Enable the windows SDK min and max macros (they are disabled by default with /DNOMINMAX)
 * no_default_cpp_unwinding - Disable the /EHsc option which is enabled by default on non-`wdm` builds
 * no_runtime_checks - Disable /RTC1 option which is enabled by default in non-`wdm` dbg and fastbuild

@@ -627,7 +627,7 @@ def _impl(ctx):
     dbg_link_flags_fast = [
         flag_set(
             actions = all_link_actions,
-            flag_groups = [flag_group(flags = ["/INCREMENTAL:NO"])],
+            flag_groups = [flag_group(flags = ["/DEBUG:FULL", "/INCREMENTAL:NO"])],
         ),
     ]
 

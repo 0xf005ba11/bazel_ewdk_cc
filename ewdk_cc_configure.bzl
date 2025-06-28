@@ -1324,7 +1324,12 @@ def _impl(ctx):
 
     windows_export_all_symbols_feature = feature(name = "windows_export_all_symbols")
 
-    no_windows_export_all_symbols_feature = feature(name = "no_windows_export_all_symbols")
+    no_windows_export_all_symbols_feature = feature(
+        name = "no_windows_export_all_symbols",
+        # This shouldn't be enabled by default.
+        # Hack around bazel DefParser crash: https://github.com/bazelbuild/bazel/issues/25531
+        enabled = True,
+    )
 
     include_paths_feature = feature(
         name = "include_paths",

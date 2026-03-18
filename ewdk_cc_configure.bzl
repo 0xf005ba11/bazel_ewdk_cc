@@ -959,7 +959,7 @@ def _impl(ctx):
             flag_set(
                 actions = all_link_actions,
                 flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmtd.lib"])],
-                with_features = [with_feature_set(features = ["dbg"], not_features = ["disable_mscvrt", "static_link_msvcrt_no_debug"])],
+                with_features = [with_feature_set(features = ["dbg"], not_features = ["disable_msvcrt", "static_link_msvcrt_no_debug"])],
             ),
         ],
     )

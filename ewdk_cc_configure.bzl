@@ -949,7 +949,7 @@ def _impl(ctx):
             flag_set(
                 actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                 flag_groups = [flag_group(flags = ["/MTd"])],
-                with_features = [with_feature_set(features = ["dbg"], not_features = ["disable_mscvrt", "static_link_msvcrt_no_debug"])],
+                with_features = [with_feature_set(features = ["dbg"], not_features = ["disable_msvcrt", "static_link_msvcrt_no_debug"])],
             ),
             flag_set(
                 actions = all_link_actions,

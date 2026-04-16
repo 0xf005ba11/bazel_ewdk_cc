@@ -3,6 +3,8 @@
 
 # EWDKDIR envvar not set. Toolchains unavailable.
 
+exports_files(glob(["*.cmd"]))
+
 load(":ewdk_cc_configure.bzl", "ewdk_cc_toolchain_config", "empty")
 load(":resource_toolchain.bzl", "resource_script_toolchain_config")
 load(":wpp_toolchain.bzl", "wpp_toolchain_config")

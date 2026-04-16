@@ -115,7 +115,7 @@ ewdk_command(
 
 Make sure to include one of ```subsystem_console``` or ```subsystem_windows```. Use ```subsystem_windows``` for DLLs.
 
-If you are using the MS C-Runtime, also include one of ```static_link_msvcrt``` or ```dynamic_link_msvcrt```. These features will automatically choose debug versions when building in ```dbg``` mode.
+If you are using the MS C-Runtime, also include one of ```static_link_msvcrt``` or ```dynamic_link_msvcrt```. These features will automatically choose debug versions when building in ```dbg``` mode. To always specify a non-debug version, use one of ```static_link_msvcrt_no_debug``` or ```dynamic_link_msvcrt_no_debug```. This may be required when external dependencies always link against a non-debug version.
 
 ```starlark
 cc_binary(
@@ -201,6 +201,8 @@ In addition to features from the built-in bazel C++ toolchain, the following hav
 * cpp17 - /std:c++17
 * cpp20 - /std:c++20
 * cpp_latest - /std:c++latest
+* static_link_msvcrt_no_debug - Force /MT when static linking the msvcrt.
+* dynamic_link_msvcrt_no_debug - Force /MD when dynamic linking the msvcrt.
 * disable_msvcrt - Bazel forces msvcrt linkage. This can be used to disable the usage. Default for `wdm`.
 * msvc_enable_minmax - Enable the windows SDK min and max macros (they are disabled by default with /DNOMINMAX)
 * no_default_cpp_unwinding - Disable the /EHsc option which is enabled by default on non-`wdm` builds

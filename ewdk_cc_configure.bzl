@@ -2735,8 +2735,12 @@ def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
 
 ewdk_cc_autoconf_toolchains = repository_rule(
     implementation = _ewdk_cc_autoconf_toolchains_impl,
-    local = True,
     configure = True,
+    environ = [
+        "EWDKDIR",
+        "PROCESSOR_ARCHITECTURE",
+        "PROCESSOR_IDENTIFIER",
+    ],
 )
 
 def register_ewdk_cc_toolchains(name = "ewdk_cc"):

@@ -58,6 +58,23 @@ use_repo(ewdk_toolchains, ewdk_cc = "ewdk_toolchains")
 register_toolchains("@ewdk_cc//:all")
 ```
 
+### Disabling the default toolchain constraint
+
+By default, the `ewdk_toolchain` constraint setting sets its `default_constraint_value` to
+`ewdk_cc`, so every Windows platform resolves to the EWDK toolchain whenever `EWDKDIR` is set.
+If you only want the EWDK toolchain selected on platforms that explicitly carry the `ewdk_cc`
+constraint value (e.g. to keep normal user-mode builds on a different C++ toolchain), opt out via
+the extension's `configure` tag:
+
+```starlark
+ewdk_toolchains = use_extension("@ewdk_cc_toolchains//:ewdk_extension.bzl", "toolchains")
+ewdk_toolchains.configure(default_constraint = False)
+use_repo(ewdk_toolchains, ewdk_cc = "ewdk_toolchains")
+```
+
+When disabled, add `@ewdk_cc//:ewdk_cc` to the `constraint_values` of the platforms that should
+use the EWDK toolchain.
+
 Add the following to your .bazelrc (this should hopefully no longer be needed once this [issue](https://github.com/bazelbuild/bazel/issues/7260) is closed in bazel 7.0.0):
 ```
 build --incompatible_enable_cc_toolchain_resolution

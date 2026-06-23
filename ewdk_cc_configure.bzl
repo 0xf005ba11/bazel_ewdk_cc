@@ -2638,7 +2638,18 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     arms = ["arm", "arm64"]
     plat32 = ["x86", "arm"]
     platforms = intels + arms
+
+    # When opted in (default), the ewdk_toolchain constraint_setting defaults
+    # every platform to :ewdk_cc. Consumers can disable this via the module
+    # extension's configure tag (default_constraint = False) so that normal
+    # user-mode builds aren't silently routed through the driver toolchain.
+    if repository_ctx.attr.default_constraint:
+        default_constraint = 'default_constraint_value = ":ewdk_cc",'
+    else:
+        default_constraint = "# default_constraint_value omitted (configure(default_constraint = False))"
+
     tpl_vars = {
+        "%{ewdk_default_constraint}": default_constraint,
         "%{ewdk_launch_env}": env_str.replace("\\", "\\\\"),
         "%{msvc_env_tmp}": env["TMP"].replace("\\", "\\\\"),
         "%{msvc_rc_path}": env["_RC_PATH"].replace("\\", "/"),
@@ -2737,6 +2748,12 @@ ewdk_cc_autoconf_toolchains = repository_rule(
     implementation = _ewdk_cc_autoconf_toolchains_impl,
     local = True,
     configure = True,
+    attrs = {
+        "default_constraint": attr.bool(
+            default = True,
+            doc = "If True, the ewdk_toolchain constraint_setting defaults to :ewdk_cc.",
+        ),
+    },
 )
 
 def register_ewdk_cc_toolchains(name = "ewdk_cc"):

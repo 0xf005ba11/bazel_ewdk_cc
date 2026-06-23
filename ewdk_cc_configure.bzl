@@ -3,6 +3,7 @@
 
 """EWDK toolchain implementation"""
 
+load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
     "action_config",
@@ -17,7 +18,6 @@ load(
     "variable_with_value",
     "with_feature_set",
 )
-load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 
 _project_types = {
     "app": r"""<?xml version="1.0" encoding="utf-8"?>
@@ -163,13 +163,14 @@ def _get_ewdk_version(repository_ctx, ewdkdir):
     output = repository_ctx.execute(["./ewdk_get_version.bat"]).stdout
     if output.startswith("Version "):
         output = output[len("Version "):]
-    numbers = [int(o) for o in output.split('.') if o.isdigit()]
+    numbers = [int(o) for o in output.split(".") if o.isdigit()]
     if len(numbers) != 2:
         fail("Unsupported EWDK version format: %s" % output)
     return (numbers[0], numbers[1])
 
 def _does_ewdk_support_native_arm64(repository_ctx, ewdkdir):
     """Checks if the EWDK version supports native ARM64 compiler"""
+
     # Microsoft started delivering a native ARM64 compiler in ge_release.26100.1
     (major, _) = _get_ewdk_version(repository_ctx, ewdkdir)
     return major >= 26100
@@ -192,7 +193,7 @@ def _get_ewdk_env(repository_ctx, ewdkdir, host_cpu):
         tgt_arch = "x86"
         platform_arch = "x86"
         bin_arch = "x86"
-    else: # x64_windows
+    else:  # x64_windows
         host_arch = "amd64"
         tgt_arch = "amd64"
         platform_arch = "x64"
@@ -2060,7 +2061,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp20_module_codegen,
                 ],
                 flag_groups = [flag_group(flags = ["/std:c++14"])],
-                with_features = [with_feature_set(not_features = ["cpp_latest","cpp20","cpp17"])],
+                with_features = [with_feature_set(not_features = ["cpp_latest", "cpp20", "cpp17"])],
             ),
         ],
     )
@@ -2081,7 +2082,7 @@ def _impl(ctx):
                     ACTION_NAMES.cpp20_module_codegen,
                 ],
                 flag_groups = [flag_group(flags = ["/std:c++17"])],
-                with_features = [with_feature_set(not_features = ["cpp_latest","cpp20"])],
+                with_features = [with_feature_set(not_features = ["cpp_latest", "cpp20"])],
             ),
         ],
     )
@@ -2631,7 +2632,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     content_root = env["WINDOWSSDKDIR"].rstrip("\\").replace("\\", "/")
     host_binroot = env["_CL_PATH"]
     host_binroot = host_binroot[:-len("\\cl.exe")]
-    host_binroot = host_binroot[:host_binroot.rfind('\\')]
+    host_binroot = host_binroot[:host_binroot.rfind("\\")]
     host_binroot = host_binroot.rstrip("\\").replace("\\", "/")
 
     intels = ["x86", "x64"]
@@ -2682,7 +2683,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     arm64_vars = {"%{cl_path}": tpl_vars["%{msvc_cl_path_arm64}"], "%{armasm_path}": tpl_vars["%{msvc_armasm_path_arm64}"]}
     repository_ctx.template("arm_asm.bat", arm_asm, arm_vars)
     repository_ctx.template("arm_asm64.bat", arm_asm, arm64_vars)
-    
+
     scan_vars_x86 = {"%{cl_path}": tpl_vars["%{msvc_cl_path_x86}"]}
     scan_vars_x64 = {"%{cl_path}": tpl_vars["%{msvc_cl_path_x64}"]}
     scan_vars_arm = {"%{cl_path}": tpl_vars["%{msvc_cl_path_arm}"]}
@@ -2746,8 +2747,12 @@ def _ewdk_cc_autoconf_toolchains_impl(repository_ctx):
 
 ewdk_cc_autoconf_toolchains = repository_rule(
     implementation = _ewdk_cc_autoconf_toolchains_impl,
-    local = True,
     configure = True,
+    environ = [
+        "EWDKDIR",
+        "PROCESSOR_ARCHITECTURE",
+        "PROCESSOR_IDENTIFIER",
+    ],
     attrs = {
         "default_constraint": attr.bool(
             default = True,

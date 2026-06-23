@@ -14,7 +14,7 @@ load(":ewdk_command.bzl", "ewdk_command_config")
 
 constraint_setting(
     name = "ewdk_toolchain",
-    default_constraint_value = ":ewdk_cc",
+    %{ewdk_default_constraint}
     visibility = ["//visibility:public"],
 )
 

@@ -3,6 +3,9 @@
 
 """Defines a simple toolchain for windows resource scripts"""
 
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
+load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
+
 ResourceScriptCompilerInfo = provider(
     doc = "Toolchain for windows resource scripts",
     fields = ["rcpath", "env", "defines"],

@@ -3,6 +3,9 @@
 
 """Defines a simple toolchain for windows WPP tracing"""
 
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
+load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
+
 WppCompilerInfo = provider(
     doc = "Toolchain for windows WPP tracing",
     fields = ["tracewpp_path", "env", "cfgdir"],

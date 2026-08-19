@@ -45,7 +45,7 @@ _project_types = {
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
     <PropertyGroup>
         <ConfigurationType>Application</ConfigurationType>
-        <PlatformToolset>v143</PlatformToolset>
+        <PlatformToolset>%{platform_toolset}%</PlatformToolset>
     </PropertyGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
     <ItemGroup>
@@ -156,6 +156,15 @@ def _get_cpu_value(repository_ctx):
             return "x86_windows"
 
     return "unknown"
+
+def _get_app_platform_toolset(env):
+    vc = env.get("VCTOOLSVERSION")
+    if not vc:
+        fail("VCToolsVersion not found in EWDK environment; cannot determine PlatformToolset")
+    parts = vc.split(".")
+    if len(parts) < 2 or not parts[1]:
+        fail("Unexpected VCToolsVersion format: %s" % vc)
+    return "v" + parts[0] + parts[1][0]
 
 def _get_ewdk_version(repository_ctx, ewdkdir):
     """ Retrieves the EWDK version"""
@@ -425,7 +434,10 @@ def _msbuild_extract_vars(repository_ctx, env, project_type, platform):
     """Execute msbuild.exe with detailed verbosity enabled to extract the SetEnv tasks"""
     vars = ("PATH=", "INCLUDE=", "EXTERNAL_INCLUDE=", "LIBPATH=", "LIB=")
     projfile = project_type + ".vcxproj"
-    repository_ctx.file(projfile, _project_types[project_type])
+    content = _project_types[project_type]
+    if project_type == "app":
+        content = content.replace("%{platform_toolset}%", _get_app_platform_toolset(env))
+    repository_ctx.file(projfile, content)
     args = [
         env["_MSBUILD_PATH"],
         projfile,

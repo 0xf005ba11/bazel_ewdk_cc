@@ -403,10 +403,16 @@ def _get_exe_path(repository_ctx, filename, env):
             return line.strip()
     fail("Failed to locate %s for this EWDK" % filename)
 
-def _get_msbuild_envs(repository_ctx, env):
+def _host_binroot(env):
+    """Root of the host compiler bin directories (the parent of the per-target-arch dirs)"""
+    binroot = env["_CL_PATH"]
+    binroot = binroot[:-len("\\cl.exe")]
+    binroot = binroot[:binroot.rfind("\\")]
+    return binroot.strip("\\").replace("\\", "/")
+
+def _get_msbuild_envs(repository_ctx, env, platforms = ["x86", "x64", "arm", "arm64"]):
     """Retrieve env vars set by msbuild used as defaults for the various project types supported here"""
     build_envs = {}
-    platforms = ["x86", "x64", "arm", "arm64"]
     project_types = _project_types.keys()
 
     # Unknown if it is safe to use the string replace method on this version. Execute msbuild for all combos
@@ -421,7 +427,7 @@ def _get_msbuild_envs(repository_ctx, env):
             build_envs["{}_{}".format(project_type, platform)] = build_env
 
     # NetFx (.net framework)
-    for platform in ["x86", "x64"]:
+    for platform in [p for p in ["x86", "x64"] if p in platforms]:
         penv = "app_{}".format(platform)
         sdk = "WINDOWSSDK_EXECUTABLEPATH_{}".format(platform).upper()
         build_envs[penv]["PATH"] = "{};{}".format(env[sdk], build_envs[penv]["PATH"])
@@ -2723,21 +2729,29 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
         fail("EWDKDIR envvar undefined. Please define to point to the root of the EWDK.")
     (env, env_str) = _get_ewdk_env(repository_ctx, ewdkdir, host_cpu)
 
-    # Next we need to get the relevant env vars set by msbuild for the various project types we will support.
-    # This is currently limited to project types "Application" and "Driver" (WDM driver type only).
-    build_envs = _get_msbuild_envs(repository_ctx, env)
-
-    # Now we produce the toolchain's BUILD file from the template
-    content_root = env["WINDOWSSDKDIR"].rstrip("\\").replace("\\", "/")
-    host_binroot = env["_CL_PATH"]
-    host_binroot = host_binroot[:-len("\\cl.exe")]
-    host_binroot = host_binroot[:host_binroot.rfind("\\")]
-    host_binroot = host_binroot.rstrip("\\").replace("\\", "/")
-
     intels = ["x86", "x64"]
     arms = ["arm", "arm64"]
     plat32 = ["x86", "arm"]
     platforms = intels + arms
+
+    # Next we need to get the relevant env vars set by msbuild for the various project types we will support.
+    # This is currently limited to project types "Application" and "Driver" (WDM driver type only).
+    build_envs = _get_msbuild_envs(repository_ctx, env)
+
+    # EWDKs starting with 26100 (24H2) no longer ship x86/arm kernel-mode link libraries.
+    # EWDKDIR32, when set, points the LIB search path of the 32-bit (x86, arm) kernel-mode configs at an
+    # older kit that still has them. Everything else stays on EWDKDIR so 32-bit user-mode links remain
+    # consistent with objects compiled by the primary kit's tollset.
+    ewdkdir32 = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR32")
+    if ewdkdir32 and ewdkdir32.lower() != ewdkdir.lower():
+        (env32, _) = _get_ewdk_env(repository_ctx, ewdkdir32, host_cpu)
+        envs32 = _get_msbuild_envs(repository_ctx, env32, platforms = plat32)
+        for p in plat32:
+            build_envs["wdm_" + p]["LIB"] = envs32["wdm_" + p]["LIB"]
+    
+    # Now we produce the toolchain's BUILD file from the template
+    content_root = env["WINDOWSSDKDIR"].rstrip("\\").replace("\\", "/")
+    host_binroot = _host_binroot(env)
 
     # When opted in (default), the ewdk_toolchain constraint_setting defaults
     # every platform to :ewdk_cc. Consumers can disable this via the module
@@ -2849,6 +2863,7 @@ ewdk_cc_autoconf_toolchains = repository_rule(
     configure = True,
     environ = [
         "EWDKDIR",
+        "EWDKDIR32",
         "PROCESSOR_ARCHITECTURE",
         "PROCESSOR_IDENTIFIER",
     ],

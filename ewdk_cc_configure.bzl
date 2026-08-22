@@ -2741,7 +2741,7 @@ def _configure_ewdk_cc(repository_ctx, host_cpu):
     # EWDKs starting with 26100 (24H2) no longer ship x86/arm kernel-mode link libraries.
     # EWDKDIR32, when set, points the LIB search path of the 32-bit (x86, arm) kernel-mode configs at an
     # older kit that still has them. Everything else stays on EWDKDIR so 32-bit user-mode links remain
-    # consistent with objects compiled by the primary kit's tollset.
+    # consistent with objects compiled by the primary kit's toolset.
     ewdkdir32 = _get_path_envvar(repository_ctx.os.environ, "EWDKDIR32")
     if ewdkdir32 and ewdkdir32.lower() != ewdkdir.lower():
         (env32, _) = _get_ewdk_env(repository_ctx, ewdkdir32, host_cpu)

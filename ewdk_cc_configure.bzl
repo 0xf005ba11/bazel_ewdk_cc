@@ -408,7 +408,7 @@ def _host_binroot(env):
     binroot = env["_CL_PATH"]
     binroot = binroot[:-len("\\cl.exe")]
     binroot = binroot[:binroot.rfind("\\")]
-    return binroot.strip("\\").replace("\\", "/")
+    return binroot.rstrip("\\").replace("\\", "/")
 
 def _get_msbuild_envs(repository_ctx, env, platforms = ["x86", "x64", "arm", "arm64"]):
     """Retrieve env vars set by msbuild used as defaults for the various project types supported here"""
